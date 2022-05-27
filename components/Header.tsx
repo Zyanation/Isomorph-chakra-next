@@ -1,9 +1,8 @@
 import { Mainnet, DAppProvider, useEtherBalance, useEthers, Config } from '@usedapp/core'
 
 import { useState, useEffect } from "react";
-import { Web3ReactProvider, useWeb3React } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
-import { InjectedConnector } from "@web3-react/injected-connector";
+
 import { formatEther } from "@ethersproject/units";
 
 import NextLink from 'next/link'
@@ -47,7 +46,7 @@ export default function WithSubnavigation() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const { account, deactivate, activateBrowserWallet} = useEthers()
-  // const etherBalance = useEtherBalance(account)
+  // const etherBalance = useEtherBalance(account)ss
 
   const [ short_account, setshort_account ] = useState()
 

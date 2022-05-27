@@ -3,7 +3,6 @@ import { formatEther } from '@ethersproject/units'
 import { getDefaultProvider } from 'ethers'
 import { MetamaskConnect } from './components/MetamaskConnect'
 
-import Web3context  from '../components/Web3Connect/Web3context'
 import '../styles/globals.css'
 import Layout from '../components/Layout'
 import { ChakraProvider } from '@chakra-ui/react'
