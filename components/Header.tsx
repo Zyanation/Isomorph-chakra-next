@@ -52,7 +52,7 @@ export default function WithSubnavigation() {
 
   useEffect(()=> {
     if(account) {
-    const _short_account = account.slice(0, 3) + "..." + account.slice(39, 42)
+    const _short_account : any = account.slice(0, 3) + "..." + account.slice(39, 42)
     setshort_account(_short_account)
     }
   }, [account])
