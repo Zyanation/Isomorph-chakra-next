@@ -241,12 +241,15 @@ const Dashboard = ({...pageProps}) => {
       setselectcollat(utils.formatUnits(collatBalance, 18))
     }
 
-    let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
-    const newsigner = tempProvider.getSigner()
-    setSigner(newsigner)
-    console.log(newsigner)
+    const asyncfunc = async () => {
+      let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
+      const newsigner = tempProvider.getSigner()
+      await setSigner(newsigner)
+      console.log(newsigner)
 
+    }
 
+    asyncfunc()
   
   }, [account])
 

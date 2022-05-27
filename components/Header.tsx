@@ -83,7 +83,7 @@ export default function WithSubnavigation() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-        <NextLink href="/Homepage">
+        <NextLink href="/">
           <Image boxSize='40px' src="/images/1-logo_11-logo.png" alt='Isomorph'>
           </Image>
           </NextLink>
