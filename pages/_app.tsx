@@ -7,7 +7,7 @@ import '../styles/globals.css'
 import Layout from '../components/Layout'
 import { ChakraProvider } from '@chakra-ui/react'
 import react from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext } from 'react'
 
 import theme from "../themes"
 
@@ -30,10 +30,11 @@ const config: Config = {
 
 function MyApp({ Component, pageProps }) {
 
-  const { account, deactivate } = useEthers()
+  const { account } = useEthers()
   const etherBalance = useEtherBalance(account)
 
-  console.log(process.env.KOVAN_INFURA)
+  
+
 
   return (
     <ChakraProvider theme={theme}>

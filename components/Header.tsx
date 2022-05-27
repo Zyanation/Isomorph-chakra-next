@@ -88,10 +88,10 @@ export default function WithSubnavigation() {
           </Image>
           </NextLink>
           <Text
+            as="kbd"
             mt="10px"
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontWeight="bold"
-            fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}>
             
             Isomorph
