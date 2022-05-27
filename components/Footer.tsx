@@ -75,12 +75,11 @@ const ListHeader = ({ children }: { children: ReactNode }) => {
   );
 };
 
+
+
 export default function Footer() {
   return (
-    <Box>
-
-
-
+    <Box mt="10vh">
 
 <Box
       bg={useColorModeValue('gray.50', 'gray.900')}
@@ -92,7 +91,7 @@ export default function Footer() {
           <Stack spacing={6}>
 
             <Stack direction={'row'} spacing={6}>
-              <SocialButton label={'Twitter'} href={'#'}>
+              <SocialButton label={'Twitter'} isExternal href={'https://twitter.com/0xThreeStigmata'}>
                 <FaTwitter />
               </SocialButton>
               <SocialButton label={'YouTube'} href={'#'}>

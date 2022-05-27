@@ -400,11 +400,12 @@ const WalletConnect = () => {
     onClick={() => activateBrowserWallet()}
     display={{ base: 'none', md: 'inline-flex' }}
     fontSize={'sm'}
-    fontWeight={600}
+    fontWeight={700}
+    letterSpacing={1}
     color={'white'}
-    bg={'green.400'}
+    bg={'green.600'}
     _hover={{
-      bg: 'green.300',
+      bg: 'green.500',
     }}>
     Connect Wallet
   </Button>

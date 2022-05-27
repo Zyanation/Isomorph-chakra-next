@@ -7,6 +7,8 @@ import util from 'util'
 
 import mousd_abi from '../components/mousd_abi.json'
 
+import { useToast } from '@chakra-ui/react'
+
 import {
   Stat,
   StatLabel,
@@ -89,7 +91,7 @@ import { off } from 'process'
 
 const Dashboard = ({...pageProps}) => {
 
-
+  const toast = useToast()
   const MOUSD_ADDR = '0xBd008Bdd48b391CaF1523efb966F2288F555bbE0'
   const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
 
@@ -147,7 +149,6 @@ const Dashboard = ({...pageProps}) => {
   const [selectedcollat, setselectcollat] = useState()
 
 
-
   const getWalletcollat = async (_selectedcollat) => {
 
     let ADDR
@@ -158,12 +159,31 @@ const Dashboard = ({...pageProps}) => {
         ADDR = SUSD_ADDR
         break;
       case "eth":
-        console.log("ethed")
         ADDR = undefined
+        console.log("ethed")
+
+        toast({
+          position: 'bottom',
+          title: 'Stop, you criminal scum!',
+          description: "Sorry, but we currently do not support Ethereum right now on the Kovan test net.",
+          status: 'warning',
+          duration: 4000,
+          isClosable: true,
+        })
         break;
       case "lyralp":
-        console.log("lyralped")
+        
         ADDR = undefined
+        console.log("lyralped")
+
+        toast({
+          position: 'bottom',
+          title: 'Stop, you criminal scum!',
+          description: "Sorry, but we currently do not support Lyra LP tokens right now on the Kovan test net.",
+          status: 'warning',
+          duration: 4000,
+          isClosable: true,
+        })
         break;
     }
 
@@ -242,8 +262,31 @@ const Dashboard = ({...pageProps}) => {
     if(state.status === "PendingSignature" || state.status === "Mining") {
       setisLoading(true) }
 
-     if(state.status === 'Success' || state.status === 'Exception') {
+     if(state.status === 'Success')
+     {
       setisLoading(false)
+      toast({
+        position: 'bottom',
+        title: 'Success',
+        description: "Transaction succeeded",
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      })
+    }
+     
+     
+     
+     if (state.status === 'Exception') {
+      setisLoading(false)
+      toast({
+        position: 'bottom',
+        title: 'Success',
+        description: "Transaction reverted",
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
     }
 
   }, [state.status])
@@ -306,7 +349,6 @@ const Dashboard = ({...pageProps}) => {
     mx="auto"
     mt="5vh"
     px={4}
-    backgroundColor={'whiteAlpha.200'}
     >
         {/* left box */}
         <Flex
@@ -321,12 +363,13 @@ const Dashboard = ({...pageProps}) => {
         mt="5vh"
         px={4}
         backgroundColor={'blackAlpha.700'}
+        rounded='lg'
         
 
         >
-            <Box w={[150, 300, 500]} h="100px" mt="5vh" px="20px">
+            <Box w={[150, 300, 500]} h="100px" mt="3vh" p="20px" rounded='lg'>
               <VStack px="10px" w="fill" h="65vh" mb="10px" bgColor="blackAlpha.300" alignItems="flex-start">
-                  <Heading size="md">Open position</Heading><Divider />
+                  <Heading size="md" mt="10px">Open position</Heading><Divider />
                   {/* <Image src="./images/susd.png"></Image> */}
           
                   <Select size="lg" placeholder='Select collateral' onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -338,7 +381,13 @@ const Dashboard = ({...pageProps}) => {
                   <option value='eth'>Ethereum</option>
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
-                  <Button alignSelf="center" isLoading={isLoading ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
+                  { collatval ?
+                  <Button alignSelf="center" colorScheme="green" isLoading={isLoading ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
+                  :
+                  <Button alignSelf="center" colorScheme="green" isDisabled="1" isLoading={isLoading ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
+
+                  }
+                  
                   <Divider />
 
 
@@ -380,11 +429,11 @@ const Dashboard = ({...pageProps}) => {
         mx="auto"
         mt="5vh"
         px={4}
-        backgroundColor={'whiteAlpha.200'}
         overflowX="auto"
         >
-          <TableContainer mt={10} w="110vh">
-            <Table variant='simple' colorScheme='facebook' bgColor="blackAlpha.700" size="lg" pos="static">
+          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('blackAlpha.700', 'blackAlpha.700')}>
+          <TableContainer rounded='lg' mt={10} w="110vh">
+            <Table variant='simple' colorScheme='facebook' size="md" pos="static">
                 <Thead>
                     <Tr><Th>Personal Positions</Th></Tr>
                 </Thead>
@@ -399,20 +448,35 @@ const Dashboard = ({...pageProps}) => {
                 </Thead>
                 <Tbody>
                   <Tr height="150px">
+
+                    {!account ? 
+                      <Box position="relative" alignSelf="center" left="450px" top="50px">No open positions</Box>
+                  :
+                    <>
                     <Td><StatNumber>{loanval && ethersToNum(loanval)} MOUSD</StatNumber></Td>
                     <Td><StatNumber>$ {loanval && ethersToNum(loanval)}</StatNumber></Td>
                     <Td><Text><StatNumber>{collatval && ethersToNum(collatval)} sUSD</StatNumber></Text></Td>
                     <Td isNumeric>{collatval && ethersToNum(collatval)}</Td>
                     <Td isNumeric>{loanval && ethersToNum(collatval)/ethersToNum(loanval)*(ethersToNum(loanval))*0.6 }</Td>
+                    </>
+                  
+                  }
+
+                      
+
+                    
+
+
                   </Tr>
                   </Tbody>
 
                   </Table>
-                  </TableContainer>  
+                  </TableContainer>
+                  </Box>
 
-<Box bg='blackAlpha.700'>
+<Box rounded='lg' bg='blackAlpha.700'>
 <Accordion justifyContent="center" w="100vh" defaultIndex={[0]} allowMultiple>
-<AccordionItem>
+<AccordionItem rounded='lg'>
   <h2>
     <AccordionButton>
       <Box m="10px" flex='1' textAlign='left'>
