@@ -8,7 +8,12 @@ import { formatEther } from "@ethersproject/units";
 
 import NextLink from 'next/link'
 
+import { PhoneIcon, AddIcon, WarningIcon, DeleteIcon } from '@chakra-ui/icons'
+
 import {
+  Container,
+  HStack,
+  VStack,
   Image,
   Box,
   Flex,
@@ -42,13 +47,21 @@ export default function WithSubnavigation() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const { account, deactivate, activateBrowserWallet} = useEthers()
-  const etherBalance = useEtherBalance(account)
+  // const etherBalance = useEtherBalance(account)
 
+  const [ short_account, setshort_account ] = useState()
+
+  useEffect(()=> {
+    if(account) {
+    const _short_account = account.slice(0, 3) + "..." + account.slice(39, 42)
+    setshort_account(_short_account)
+    }
+  }, [account])
 
   return (
     <Box>
       <Flex
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue('white', 'gray.700')}
         color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
         py={{ base: 2 }}
@@ -71,15 +84,20 @@ export default function WithSubnavigation() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+        <NextLink href="/Homepage">
           <Image boxSize='40px' src="/images/1-logo_11-logo.png" alt='Isomorph'>
-
           </Image>
+          </NextLink>
           <Text
+            mt="10px"
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+            fontWeight="bold"
             fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}>
+            
             Isomorph
           </Text>
+          
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav />
@@ -98,7 +116,7 @@ export default function WithSubnavigation() {
           <Button
             as={'a'}
             fontSize={'sm'}
-            fontWeight={400}
+            fontWeight="bold"
             variant={'link'}
             href={'#'}>
             Sign In
@@ -106,22 +124,37 @@ export default function WithSubnavigation() {
           
 
 
-
-
-            <Box>{account && <p>Account: {account}</p>}</Box>
+        <HStack w="160px">
+          {account ? 
+          
+          (
+            <HStack w="160px">
+            <Text fontSize='sm'><Text><b>Connected as:</b></Text> {short_account}</Text> 
             <Button
-            onClick={() => activateBrowserWallet()}
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'green.400'}
-            href={'#'}
-            _hover={{
-              bg: 'green.300',
-            }}>
-            Connect Wallet
-          </Button>
+                  size='xs'
+                  onClick={() => deactivate()}
+                  colorScheme='pink'
+                >
+                  <DeleteIcon                   
+                  w='10px'
+                  h='10px'/>
+            </Button>
+            
+            </HStack>
+
+          
+          ) 
+          
+          
+          : (
+          
+          <><WalletConnect /></>)}
+
+        </HStack>
+        
+            
+
+            
         </Stack>
       </Flex>
 
@@ -139,14 +172,31 @@ const DesktopNav = () => {
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
+  const { isOpen, onToggle } = useDisclosure();
+
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const { account } = useEthers()
+  // const etherBalance = useEtherBalance(account)
+
+
+
 
   return (
+<>
+    
+      {/* <Button
+        onClick={() => deactivate()}
+        colorScheme='blue'
+      >
+        Click me
+      </Button> */}
+
+    <Stack direction={'row'} spacing={6} mt='10px'>
 
 
-    <Stack direction={'row'} spacing={4}>
 
-
-          <NextLink href="/Homepage"><a className="nav-link">Homepage</a></NextLink>
+          <NextLink href="/#"><Link><Text fontWeight="bold" fontSize='14px'>ABOUT</Text></Link></NextLink>
             <NextLink className="nav-link" href={"./Dashboard"}
                 // errorMessage = {errorMessage}
                 // setErrorMessage =  {setErrorMessage}
@@ -165,15 +215,16 @@ const DesktopNav = () => {
                 // accountChangedHandler =  {accountChangedHandler}
                 // updateEthers =  {updateEthers}
                 >
-            <a className="nav-link">Dashboard</a>
+            <Link><Text fontWeight="bold" fontSize='14px'>DASHBOARD</Text></Link>
           </NextLink>
-            <a href="https://optimism.curve.fi/" className="nav-link">TRADE MOUSD</a>
-            <a href="/#" className="nav-link">BUG BOUNTY</a>
-          <a href="/#" className="nav-link">CONTACT US</a>
-
+          
+          <Link href="https://optimism.curve.fi/" isExternal><Text fontWeight="bold" fontSize='14px'>TRADE MOUSD</Text></Link>
+          <NextLink href="/#"><Link><Text fontWeight="bold" fontSize='14px'>BUG BOUNTY</Text></Link></NextLink>
+          <NextLink href="/Contact"><Link><Text fontWeight="bold" fontSize='14px'>CONTACT US</Text></Link></NextLink>
 
       
     </Stack>
+    </>
   );
 };
 
@@ -336,3 +387,27 @@ const NAV_ITEMS: Array<NavItem> = [
     href: '#',
   },
 ];
+
+
+
+
+const WalletConnect = () => {
+  const { activateBrowserWallet} = useEthers()
+
+  return (
+
+    <Button
+    w='160px'
+    onClick={() => activateBrowserWallet()}
+    display={{ base: 'none', md: 'inline-flex' }}
+    fontSize={'sm'}
+    fontWeight={600}
+    color={'white'}
+    bg={'green.400'}
+    _hover={{
+      bg: 'green.300',
+    }}>
+    Connect Wallet
+  </Button>
+  )
+}
