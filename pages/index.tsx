@@ -11,6 +11,7 @@ import {
   Button,
   Icon,
   IconProps,
+  useColorModeValue
 } from '@chakra-ui/react';
 
 
@@ -38,9 +39,33 @@ function App() {
   );
 }
 
+const confetti = {
+  light: {
+    primary: 'BEE3F8', // blue.400
+    secondary: 'BEE3F8', // blue.100
+  },
+
+  dark: {
+    primary: '1A365D', // blue.900
+    secondary: '2A4365', // blue.800
+  },
+};
+
+const CONFETTI_LIGHT = `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v6H0V0zm28 8h12v6H28V8zm14-8h12v6H42V0zm14 0h12v6H56V0zm0 8h12v6H56V8zM42 8h12v6H42V8zm0 16h12v6H42v-6zm14-8h12v6H56v-6zm14 0h12v6H70v-6zm0-16h12v6H70V0zM28 32h12v6H28v-6zM14 16h12v6H14v-6zM0 24h12v6H0v-6zm0 8h12v6H0v-6zm14 0h12v6H14v-6zm14 8h12v6H28v-6zm-14 0h12v6H14v-6zm28 0h12v6H42v-6zm14-8h12v6H56v-6zm0-8h12v6H56v-6zm14 8h12v6H70v-6zm0 8h12v6H70v-6zM14 24h12v6H14v-6zm14-8h12v6H28v-6zM14 8h12v6H14V8zM0 8h12v6H0V8z' fill='%23${confetti.light.primary}' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`;
+const CONFETTI_DARK = `background-color: #2a4365;
+background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%231a365d' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");`
+
 function CallToActionWithIllustration() {
   return (
-    <Container maxW={'5xl'}>
+    <Flex
+    mb="-100px"
+    css={{
+      backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
+      backgroundAttachment: 'fixed',
+    }}>
+    <Container 
+    maxW={'5xl'}>
+      
       <Stack
         textAlign={'center'}
         align={'center'}
@@ -52,7 +77,7 @@ function CallToActionWithIllustration() {
           lineHeight={'110%'}>
            
           <Text as={'span'} color={'purple.400'}>
-            Frictionaless {' '}
+            Frictionless {' '}
           </Text>
           DeFi lending
         </Heading>
@@ -77,6 +102,7 @@ function CallToActionWithIllustration() {
         </Flex>
       </Stack>
     </Container>
+    </Flex>
   );
 }
 

@@ -11,157 +11,190 @@ import {
   } from '@chakra-ui/react'
 
 
+  import {
+    IconButton,
+    InputGroup,
+    InputLeftElement,
+    Link,
+    Stack,
+    Textarea,
+    Tooltip,
+    useClipboard
+  } from '@chakra-ui/react';
 
-const Contact = () => {
-
-   
-    const bgColor = useColorModeValue("red.200", "whiteAlpha.50")
-    const colSpan = useBreakpointValue({base: 2, md: 1})
-
-  return (
-    <Container 
-    maxWidth='container.xl'
-    padding='0'
-    >
-            <Flex h="100vh"
-                py={20}
-            >
-                    <VStack backgroundColor={bgColor}
-                            w="full"
-                            h="full"
-                            p={10}
-                            spacing={10}
-                            alignItems="flex-start"
-                    >
-                        <VStack spacing={3}
-                                alignItems="flex-start">
-                            <Heading size="2xl">
-                                Your details
-                            </Heading>
-                            <Text>If you already have an account, click here to login</Text>
-                        </VStack>
-
-                        <SimpleGrid columns={2} columnGap={3} rowGap={6} w="full">
-                            <GridItem colSpan={colSpan}>
-                                <FormControl>
-                                    <FormLabel>First Name</FormLabel>
-                                    <Input placeholder="John" />
-                                </FormControl>
-                            </GridItem>
-                            <GridItem colSpan={1}>
-                                <FormControl>
-                                    <FormLabel>Last Name</FormLabel>
-                                    <Input placeholder="Doe" />
-                                </FormControl>
-                            </GridItem>
-
-                            <GridItem colSpan={2}>
-                                <FormControl>
-                                    <FormLabel>Address</FormLabel>
-                                    <Input placeholder="Some address" />
-                                </FormControl>
-                            </GridItem>
-
-                            <GridItem colSpan={1}>
-                                <FormControl>
-                                    <FormLabel>City</FormLabel>
-                                    <Input placeholder="San Francisco" />
-                                </FormControl>
-                            </GridItem>
-
-                            <GridItem colSpan={1}>
-                                <FormControl>
-                                    <FormLabel>Country</FormLabel>
-                                    <Select>
-                                        <option value="usa">United States of America</option>
-                                        <option value="uae">United Arab Emirates</option>
-                                    </Select>
-                                </FormControl>
-                            </GridItem>
-
-                            <GridItem colSpan={2}>
-                                <Checkbox defaultChecked>
-                                    Ship to billing address
-                                </Checkbox>
-                            </GridItem>
-
-                            <GridItem colSpan={2}>
-                                <Button size="lg" w="full">
-                                    Place order
-                                </Button>
-                            </GridItem>
-
-                        </SimpleGrid>
-
-
-                    </VStack>
-
-
-
-
-
-
-
-
-
-
-
-                    <VStack 
-                            w="full"
-                            h="full"
-                            p={10}
-                            spacing={10}
-                            alignItems="flex-start"
-                            bg="gray.400">
-
-                    <VStack alignItems="flex-start" w="full">
-                            <Heading>
-                                Your cart
-
-                                <Slider defaultValue={60} min={0} max={300} step={30}>
-                                <SliderTrack bg='red.100'>
-                                    <Box position='relative' right={10} />
-                                    <SliderFilledTrack bg='tomato' />
-                                </SliderTrack>
-                                <SliderThumb boxSize={6} />
-                                </Slider>
-                            </Heading>
-                            <Box>
-                                <Text>
-                                    if price is too hard on your eyes, <b>try changing the theme.</b>
-                                </Text>
-                                
-                            </Box>
-
-                            <Flex w="full" h={40} bg="gray.700" m={5}>
-                                <HStack w="full" h={40} bg="gray.300" alignItems="flex-start" spacing={2}>
-                                    <Box w="120px" h="full" bg="red"></Box>
-                                    <VStack alignItems="flex-start" alignSelf="center" p={2}>
-                                        <Heading size="md">Pennyboard</Heading>
-                                        <Text>PSDSAD34223</Text>
-                                    </VStack>
-                                </HStack>
-                                <Flex flexDirection="row-reverse" alignSelf="center">
-                                        <Text>$119.32</Text>
-                                </Flex>
-                            </Flex>
-
-                            <VStack spacing={4} alignItems="stretch" w="full">
-                                <HStack justifyContent='space-between'>
-                                    <Text>why arent you showing up tho</Text>
-                                    <Text>more text</Text>
-                                </HStack>
-
-                            </VStack>
-   
-                    </VStack>
-                        
-
-                    </VStack>
-            </Flex>
-      
-    </Container>
-  )
-}
-
-export default Contact
+  import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from 'react-icons/bs';
+  import { MdEmail, MdOutlineEmail } from 'react-icons/md';
+  
+  const confetti = {
+    light: {
+      primary: 'BEE3F8', // blue.400
+      secondary: 'BEE3F8', // blue.100
+    },
+  
+    dark: {
+      primary: '1A365D', // blue.900
+      secondary: '2A4365', // blue.800
+    },
+  };
+  
+  const CONFETTI_LIGHT = `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v6H0V0zm28 8h12v6H28V8zm14-8h12v6H42V0zm14 0h12v6H56V0zm0 8h12v6H56V8zM42 8h12v6H42V8zm0 16h12v6H42v-6zm14-8h12v6H56v-6zm14 0h12v6H70v-6zm0-16h12v6H70V0zM28 32h12v6H28v-6zM14 16h12v6H14v-6zM0 24h12v6H0v-6zm0 8h12v6H0v-6zm14 0h12v6H14v-6zm14 8h12v6H28v-6zm-14 0h12v6H14v-6zm28 0h12v6H42v-6zm14-8h12v6H56v-6zm0-8h12v6H56v-6zm14 8h12v6H70v-6zm0 8h12v6H70v-6zM14 24h12v6H14v-6zm14-8h12v6H28v-6zM14 8h12v6H14V8zM0 8h12v6H0V8z' fill='%23${confetti.light.primary}' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`;
+  const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v6H0V0zm28 8h12v6H28V8zm14-8h12v6H42V0zm14 0h12v6H56V0zm0 8h12v6H56V8zM42 8h12v6H42V8zm0 16h12v6H42v-6zm14-8h12v6H56v-6zm14 0h12v6H70v-6zm0-16h12v6H70V0zM28 32h12v6H28v-6zM14 16h12v6H14v-6zM0 24h12v6H0v-6zm0 8h12v6H0v-6zm14 0h12v6H14v-6zm14 8h12v6H28v-6zm-14 0h12v6H14v-6zm28 0h12v6H42v-6zm14-8h12v6H56v-6zm0-8h12v6H56v-6zm14 8h12v6H70v-6zm0 8h12v6H70v-6zM14 24h12v6H14v-6zm14-8h12v6H28v-6zM14 8h12v6H14V8zM0 8h12v6H0V8z' fill='%23${confetti.dark.primary}' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`;
+  
+  export default function Contact() {
+    const { hasCopied, onCopy } = useClipboard('example@example.com');
+  
+    return (
+      <Flex
+        bg={useColorModeValue('gray.100', 'gray.900')}
+        align="center"
+        justify="center"
+        mb="-100px"
+        css={{
+          backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
+          backgroundAttachment: 'fixed',
+        }}
+        id="contact">
+        <Box
+          borderRadius="lg"
+          m={{ base: 5, md: 16, lg: 10 }}
+          p={{ base: 5, lg: 16 }}>
+          <Box>
+            <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
+              <Heading
+                
+                fontSize={{
+                  base: '4xl',
+                  md: '5xl',
+                }}>
+                Get in Touch
+              </Heading>
+  
+              <Stack
+                spacing={{ base: 4, md: 8, lg: 20 }}
+                direction={{ base: 'column', md: 'row' }}>
+                <Stack
+                  align="center"
+                  justify="space-around"
+                  direction={{ base: 'row', md: 'column' }}>
+                  <Tooltip
+                    label={hasCopied ? 'Email Copied!' : 'Copy Email'}
+                    closeOnClick={false}
+                    hasArrow>
+                    <IconButton
+                      aria-label="email"
+                      variant="ghost"
+                      size="lg"
+                      fontSize="3xl"
+                      icon={<MdEmail />}
+                      _hover={{
+                        bg: 'blue.500',
+                        color: useColorModeValue('white', 'gray.700'),
+                      }}
+                      onClick={onCopy}
+                      isRound
+                    />
+                  </Tooltip>
+  
+                  <Link href="#">
+                    <IconButton
+                      aria-label="github"
+                      variant="ghost"
+                      size="lg"
+                      fontSize="3xl"
+                      icon={<BsGithub />}
+                      _hover={{
+                        bg: 'blue.500',
+                        color: useColorModeValue('white', 'gray.700'),
+                      }}
+                      isRound
+                    />
+                  </Link>
+  
+                  <Link href="#">
+                    <IconButton
+                      aria-label="twitter"
+                      variant="ghost"
+                      size="lg"
+                      icon={<BsTwitter size="28px" />}
+                      _hover={{
+                        bg: 'blue.500',
+                        color: useColorModeValue('white', 'gray.700'),
+                      }}
+                      isRound
+                    />
+                  </Link>
+  
+                  <Link href="#">
+                    <IconButton
+                      aria-label="linkedin"
+                      variant="ghost"
+                      size="lg"
+                      icon={<BsLinkedin size="28px" />}
+                      _hover={{
+                        bg: 'blue.500',
+                        color: useColorModeValue('white', 'gray.700'),
+                      }}
+                      isRound
+                    />
+                  </Link>
+                </Stack>
+  
+                <Box
+                  bg={useColorModeValue('white', 'gray.700')}
+                  borderRadius="lg"
+                  p={8}
+                  color={useColorModeValue('gray.700', 'whiteAlpha.900')}
+                  shadow="base">
+                  <VStack spacing={5}>
+                    <FormControl isRequired>
+                      <FormLabel>Name</FormLabel>
+  
+                      <InputGroup>
+                        <InputLeftElement children={<BsPerson />} />
+                        <Input type="text" name="name" placeholder="Your Name" />
+                      </InputGroup>
+                    </FormControl>
+  
+                    <FormControl isRequired>
+                      <FormLabel>Email</FormLabel>
+  
+                      <InputGroup>
+                        <InputLeftElement children={<MdOutlineEmail />} />
+                        <Input
+                          type="email"
+                          name="email"
+                          placeholder="Your Email"
+                        />
+                      </InputGroup>
+                    </FormControl>
+  
+                    <FormControl isRequired>
+                      <FormLabel>Message</FormLabel>
+  
+                      <Textarea
+                        name="message"
+                        placeholder="Your Message"
+                        rows={6}
+                        resize="none"
+                      />
+                    </FormControl>
+  
+                    <Button
+                      colorScheme="purple"
+                      bg="purple.400"
+                      color="white"
+                      _hover={{
+                        bg: 'purple.500',
+                      }}
+                      isFullWidth>
+                      Send Message
+                    </Button>
+                  </VStack>
+                </Box>
+              </Stack>
+            </VStack>
+          </Box>
+        </Box>
+      </Flex>
+    );
+  }

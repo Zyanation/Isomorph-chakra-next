@@ -43,6 +43,7 @@ import {
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
 
+  
   const { colorMode, toggleColorMode } = useColorMode();
 
   const { account, deactivate, activateBrowserWallet} = useEthers()
@@ -62,7 +63,7 @@ export default function WithSubnavigation() {
       <Flex
         bg={useColorModeValue('white', 'gray.700')}
         color={useColorModeValue('gray.600', 'white')}
-        minH={'60px'}
+        minH={'70px'}
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}
@@ -92,7 +93,7 @@ export default function WithSubnavigation() {
             mt="10px"
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontWeight="bold"
-            color={useColorModeValue('gray.800', 'white')}>
+            color="white">
             
             Isomorph
           </Text>
