@@ -5,7 +5,7 @@ import { MetamaskConnect } from './components/MetamaskConnect'
 
 import '../styles/globals.css'
 import Layout from '../components/Layout'
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, useColorMode } from '@chakra-ui/react'
 import react from 'react'
 import { useState, useEffect, createContext } from 'react'
 
@@ -25,14 +25,22 @@ const config: Config = {
 
 
 
-
-
-
 function MyApp({ Component, pageProps }) {
 
   const { account } = useEthers()
   const etherBalance = useEtherBalance(account)
+  const { colorMode, toggleColorMode } = useColorMode();
 
+  useEffect(() => {
+    console.log(localStorage.getItem('chakra-ui-color-mode'));
+
+    if (localStorage.getItem('chakra-ui-color-mode') === 'light' && colorMode === 'dark') {
+      setTimeout(() => toggleColorMode(), 1500)
+    } else if (localStorage.getItem('chakra-ui-color-mode') === 'dark' && colorMode === 'light') {
+      setTimeout(() => toggleColorMode(), 1500)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   
 
 

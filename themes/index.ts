@@ -2,9 +2,18 @@ import {extendTheme,
      theme as base,
      withDefaultVariant } from '@chakra-ui/react'
 
-const theme = extendTheme(
-{
+     const config = {
+        initialColorMode: 'dark',
+        useSystemColorMode: false,
+      }
 
+
+
+const theme = extendTheme({config,
+
+      
+
+    
     fonts: {
         heading: `Montserrat, ${base.fonts?.heading}`,
         body: `Inter, ${base.fonts?.body}`,
@@ -35,4 +44,4 @@ const theme = extendTheme(
 
 
 
-export default theme;
+export default theme

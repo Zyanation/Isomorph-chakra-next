@@ -91,7 +91,7 @@ export default function Footer() {
           <Stack spacing={6}>
 
             <Stack direction={'row'} spacing={6}>
-              <SocialButton label={'Twitter'} isExternal href={'https://twitter.com/0xThreeStigmata'}>
+              <SocialButton label={'Twitter'} href={'https://twitter.com/0xThreeStigmata'}>
                 <FaTwitter />
               </SocialButton>
               <SocialButton label={'YouTube'} href={'#'}>
@@ -107,12 +107,9 @@ export default function Footer() {
             <Link href={'#'}>About us</Link>
             <Link href={'#'}>Blog</Link>
             <Link href={'#'}>Contact us</Link>
-            <Link href={'#'}>Pricing</Link>
-            <Link href={'#'}>Testimonials</Link>
           </Stack>
           <Stack align={'flex-start'}>
             <ListHeader>Support</ListHeader>
-            <Link href={'#'}>Help Center</Link>
             <Link href={'#'}>Terms of Service</Link>
             <Link href={'#'}>Legal</Link>
             <Link href={'#'}>Privacy Policy</Link>
