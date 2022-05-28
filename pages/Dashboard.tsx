@@ -215,14 +215,14 @@ const Dashboard = ({...pageProps}) => {
   
 }
 
-  const handleOpenloanclick = () => {
+  const handleOpenloanclick = async () => {
     setDisabled(true)
-    setMethod("openLoan")
-    setContract(contract)
+    await setMethod("openLoan")
+    await setContract(contract)
 
     console.log(contract)
 
-    send(SUSD_ADDR, "100000000000000000000", "100000000000000000000")
+    await send(SUSD_ADDR, "100000000000000000000", "100000000000000000000")
     console.log(state)
   }
   
@@ -332,7 +332,10 @@ const Dashboard = ({...pageProps}) => {
 //     return value?.[0]
 //  }
 
-
+function someFunc () {
+  console.log()
+  handleOpenloanclick()
+}
 
   
 
@@ -413,7 +416,10 @@ const Dashboard = ({...pageProps}) => {
 
               <HStack spacing="20px" justifyContent="flex-end">
                     <Button colorScheme="red">Cancel</Button>
-                    <Button colorScheme="green" onClick={handleOpenloanclick} isLoading={isLoading}>Confirm</Button>
+                    <Button colorScheme="green" 
+                    onClick={
+                      someFunc
+                    } isLoading={isLoading}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -622,7 +628,7 @@ function AddCollat({contract, signer}) {
           Add collateral:
           <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
             <HStack justifyContent='space-between' spacing="20px" width="230px">
-            <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled='true'>Add</Button>
+            <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
             </HStack>
           
           </NumberInput>
@@ -673,7 +679,7 @@ function AddLoan({contract, signer}) {
       Add collateral:
       <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled='true'>Add</Button>
+        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
         </HStack>
       
       </NumberInput>
@@ -723,7 +729,7 @@ function RemoveCollat({contract, signer}) {
       Remove collateral:
       <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleAddCollatClick} isDisabled='true'>Remove</Button>
+        <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Remove</Button>
         </HStack>
       
       </NumberInput>
@@ -775,7 +781,7 @@ function RepayLoan({contract, signer}) {
       Repay loan:
       <NumberInput position="absolute" width="382px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled='1'>Repay</Button>
+        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Repay</Button>
         </HStack>
       
       </NumberInput>
