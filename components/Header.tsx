@@ -93,7 +93,7 @@ export default function WithSubnavigation() {
             mt="10px"
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontWeight="bold"
-            color="white">
+            color={useColorModeValue('gray.800', 'white')}>
             
             Isomorph
           </Text>

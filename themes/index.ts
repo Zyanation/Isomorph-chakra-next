@@ -2,10 +2,13 @@ import {extendTheme,
      theme as base,
      withDefaultVariant } from '@chakra-ui/react'
 
-     const config = {
-        initialColorMode: 'dark',
-        useSystemColorMode: false,
-      }
+     
+
+const config = {
+    useSystemColorMode: false,
+    initialColorMode: 'light',
+    
+}
 
 
 
