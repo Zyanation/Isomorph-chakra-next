@@ -11,7 +11,9 @@ import { useState, useEffect, createContext } from 'react'
 import wait from 'wait'
 
 import theme from "../themes/index"
-
+import { SessionProvider } from "next-auth/react"
+import type { AppProps } from "next/app"
+import { WagmiConfig } from 'wagmi'
 
 
 const config: Config = {
@@ -51,6 +53,8 @@ function MyApp({ Component, pageProps}) {
 
 
   return (
+    // <WagmiConfig>
+    <SessionProvider session={pageProps.session} refetchInterval={0}>
     <ChakraProvider theme={theme}>
     <DAppProvider config={config}>
     <Layout>
@@ -59,6 +63,8 @@ function MyApp({ Component, pageProps}) {
 
     </DAppProvider>
     </ChakraProvider>
+    </SessionProvider>
+    // </WagmiConfig>
   )
   
   

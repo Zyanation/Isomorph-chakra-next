@@ -1,4 +1,6 @@
 import { Mainnet, DAppProvider, useEtherBalance, useEthers, Config } from '@usedapp/core'
+import { signIn, signOut, useSession } from "next-auth/react"
+import styles from "./header.module.css"
 
 import { useState, useEffect } from "react";
 import { Web3Provider } from "@ethersproject/providers";
@@ -41,6 +43,12 @@ import {
 } from '@chakra-ui/icons';
 
 export default function WithSubnavigation() {
+
+  const { data: session, status } = useSession()
+  const loading = status === "loading"
+
+
+
   const { isOpen, onToggle } = useDisclosure();
 
   

@@ -104,6 +104,12 @@ const Dashboard = ({...pageProps}) => {
   const [signer, setSigner] = useState(null);
   // const etherBalance = useEtherBalance(account)
 
+  const handleGetSigner = async () => {
+    let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
+    const newsigner = await tempProvider.getSigner()
+    await setSigner(newsigner)
+    console.log(signer)
+  }
 
 
 
@@ -241,9 +247,15 @@ const Dashboard = ({...pageProps}) => {
   let { state, send } = useContractFunction(useContract, useMethod, { transactionName: useMethod, signer: signer })
 
   const handlesusdapprove = async () => {
+    if(!signer) {
+      handleGetSigner()
+    }
+
+    await wait(200)
     setDisabled(true)
-    setMethod("approve")
-    setContract(susdcontract)
+    await setMethod("approve")
+    await setContract(susdcontract)
+    await wait(200)
     send(contractAddress, "1000000000000000000000000000000000000000000")
   
 }
@@ -296,10 +308,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     }
     
     if(!signer) {
-      let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
-      const newsigner = tempProvider.getSigner()
-      setSigner(newsigner)
-      console.log(signer, "useEffect signer")
+      handleGetSigner()
     }
     
 
