@@ -81,8 +81,9 @@ function CallToActionWithIllustration() {
           </Text>
           DeFi lending
         </Heading>
-        <Text color={'gray.500'} maxW={'3xl'}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <Text fontWeight="bold" color={'gray.500'} maxW={'3xl'}>
+        The Isomorph protocol is currently under construction.
+        Please feel free to request for some kETH and SUSD to test it out!
         </Text>
         <Stack spacing={6} direction={'row'}>
           <Button

@@ -249,18 +249,30 @@ const Dashboard = ({...pageProps}) => {
 }
 
 const [sliderValue, setSliderValue] = useState(50)
+const [loanslidervalue, setloanslidervalue] = useState(50)
 
   const handleOpenloanclick = async () => {
+
     setDisabled(true)
+
+    console.log(sliderValue, typeof(sliderValue))
+    console.log(loanslidervalue, typeof(loanslidervalue))
+
+    console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
+    
     await setMethod("openLoan")
     await setContract(contract)
+
 
     await wait(500)
 
     // console.log("sdsd", typeof(utils.parseUnits(sliderValue.toString())), typeof(utils.parseUnits(loanval)))
-    // send(SUSD_ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanval).toString())
+    // console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
-    console.log("slider",typeof(sliderValue),"loanslidervalue", typeof(loanslidervalue))
+    console.log(signer, "confirm loan")
+    send(SUSD_ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
+
+
 
 
 
@@ -287,7 +299,7 @@ const [sliderValue, setSliderValue] = useState(50)
       let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
       const newsigner = tempProvider.getSigner()
       setSigner(newsigner)
-      console.log(newsigner)
+      console.log(signer, "useEffect signer")
     }
     
 
@@ -317,7 +329,7 @@ const [sliderValue, setSliderValue] = useState(50)
     
 
 
-  }, [account])
+  }, [account, state])
 
 
   
@@ -472,7 +484,7 @@ function someFunc () {
 
             
 
-              <SlidebarLoan sliderValue={sliderValue}></SlidebarLoan>
+              <SlidebarLoan sliderValue={sliderValue} loanslidervalue={loanslidervalue} setloanslidervalue={setloanslidervalue}></SlidebarLoan>
 
               <Text pt="10vh" pb="10vh">Some info here: <br></br><br></br>
                  <br></br>
@@ -486,7 +498,8 @@ function someFunc () {
                     <Button colorScheme="green" 
                     onClick={
                       someFunc
-                    } isLoading={isLoading || signer ? isLoading : false}>Confirm</Button>
+                    } isLoading={isLoading}
+                    isDisabled={signer ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -557,6 +570,7 @@ function someFunc () {
     <AccordionButton>
       <Box pb="10px" m="10px" flex='1' textAlign='left'>
         <Heading size="sm" mt="5px">Manage loan</Heading>
+        
       </Box>
       <AccordionIcon />
     </AccordionButton>
@@ -613,9 +627,13 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
     <Box pt={6} pb={2}>
         <Heading mb="15px" size="sm">Collateral amount :</Heading>
         
-      <NumberInput position="absolute" width="500px" size="md" defaultValue={15} max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} value={sliderValue ? sliderValue : 0} onChange={(val) => setSliderValue(val)}>
+      <NumberInput position="absolute" width="500px" size="md" defaultValue={15} 
+      max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} 
+      value={sliderValue ? sliderValue : 0} onChange={(val) => setSliderValue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="430px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="red" variant="outline" onClick={()=> {setSliderValue(selectedCollatReadableBalance)}}>Max</Button>
+        <NumberInputField />
+        <Button size="sm" right="80px" position="absolute" colorScheme="red" variant="outline" 
+        onClick={()=> {setSliderValue(selectedCollatReadableBalance)}}>Max</Button>
         </HStack>
       
       </NumberInput>
@@ -633,8 +651,8 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
 }
 
 
-function SlidebarLoan({sliderValue}) {
-  const [loanslidervalue, setloanslidervalue] = useState(50)
+function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
+  
 
 
 
@@ -695,7 +713,7 @@ function AddCollat({contract, signer}) {
       return (
         <Box pt={6} pb={2}>
       
-          Add collateral:
+          Add collateral :
           <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
             <HStack justifyContent='space-between' spacing="20px" width="230px">
             <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
@@ -746,7 +764,7 @@ function AddLoan({contract, signer}) {
   return (
     <Box pt={6} pb={2}>
   
-      Add collateral:
+      Increase loan :
       <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
         <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
@@ -796,7 +814,7 @@ function RemoveCollat({contract, signer}) {
   return (
     <Box pt={6} pb={2}>
   
-      Remove collateral:
+      Remove collateral :
       <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
         <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Remove</Button>
@@ -848,7 +866,7 @@ function RepayLoan({contract, signer}) {
   return (
     <Box pt={6} pb={2}>
   
-      Repay loan:
+      Repay loan :
       <NumberInput position="absolute" width="382px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
         <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Repay</Button>
