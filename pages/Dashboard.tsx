@@ -3,6 +3,7 @@ import {useState} from 'react'
 import { Kovan, DAppProvider, useEtherBalance, useTokenBalance, useEthers, Config, useCall, CallResult, useContractFunction } from '@usedapp/core'
 import { utils, ethers, Signer, BigNumber } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
+import wait from 'wait'
 import util, { isObject } from 'util'
 
 import mousd_abi from '../components/mousd_abi.json'
@@ -104,6 +105,8 @@ const Dashboard = ({...pageProps}) => {
   // const etherBalance = useEtherBalance(account)
 
 
+
+
   
 
 
@@ -125,6 +128,9 @@ const Dashboard = ({...pageProps}) => {
   //   console.error(error.message)
   //   return undefined
   // }
+
+  const collatBalance = useTokenBalance(SUSD_ADDR, account)
+
 
   const [isDisabled, setDisabled] = useState(false);
 
@@ -149,8 +155,7 @@ const Dashboard = ({...pageProps}) => {
     console.log(collateralPosted)
   }
 
-  const collatBalance = useTokenBalance(SUSD_ADDR, account)
-
+ 
   const [selectedCollatReadableBalance, setSelectedCollatReadableBalance] = useState("")
 
 
@@ -250,10 +255,14 @@ const [sliderValue, setSliderValue] = useState(50)
     await setMethod("openLoan")
     await setContract(contract)
 
-    console.log(sliderValue, loanval)
+    await wait(500)
+
+    send(SUSD_ADDR, utils.formatEther(sliderValue), loanval)
+
+    console.log("sliderval", sliderValue, "loanval", loanval)
     // console.log(typeof(utils.formatEther(sliderValue)), typeof(utils.formatEther(loanval)))
 
-    await send(SUSD_ADDR, utils.formatEther(sliderValue), utils.formatEther(loanval))
+ 
 
   }
   
@@ -265,27 +274,27 @@ const [sliderValue, setSliderValue] = useState(50)
     
     if(!account) return
     
-    if (selectedCollatName == "susd") {
-      setSelectedCollatReadableBalance(utils.formatUnits(collatBalance, 18))
-    }
-
-    const asyncfunc = async () => {
-      let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
-      const newsigner = tempProvider.getSigner()
-      await setSigner(newsigner)
-      console.log(newsigner)
-
+    
+    if (selectedCollatName == "susd" && collatBalance) {
+      setSelectedCollatReadableBalance(utils.formatUnits(collatBalance))
     }
     
-    if(!signer)
-    asyncfunc()
-
+    if(!signer) {
+      let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
+      const newsigner = tempProvider.getSigner()
+      setSigner(newsigner)
+      console.log(newsigner)
+    }
+    
 
     getLoanvalue()
     getCollatvalue()
 
+
+   
+
   
-  }, [account, selectedCollatName])
+  }, [account, signer])
 
 
 
@@ -411,6 +420,7 @@ function someFunc () {
     >
         {/* left box */}
         <Flex
+        border="1px"
         flexDir="column"
         maxW={800}
         w={[150, 300, 500]}
@@ -431,7 +441,7 @@ function someFunc () {
                   <Heading size="md" mt="10px" mb="10px">Open position</Heading><Divider />
                   {/* <Image src="./images/susd.png"></Image> */}
           
-                  <Select size="lg" placeholder='Select collateral' onChangeCapture={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  <Select borderColor={useColorModeValue('blackAlpha.100', 'gray.300')} size="lg" placeholder='Select collateral' onChangeCapture={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     // e.preventDefault()
                     console.warn('onChange TextInput value: ' + e.target.value);
                     getWalletCollatBalance(e.target.value)
@@ -441,7 +451,7 @@ function someFunc () {
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
                   { selectedCollatName=="susd" ?
-                  <Button alignSelf="center" colorScheme="green" isLoading={isLoading ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
+                  <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
                   :
                   <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handlesusdapprove}>Approve</Button>
 
@@ -472,7 +482,7 @@ function someFunc () {
                     <Button colorScheme="green" 
                     onClick={
                       someFunc
-                    } isLoading={isLoading}>Confirm</Button>
+                    } isLoading={isLoading || signer ? isLoading : false}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -493,11 +503,11 @@ function someFunc () {
         px={4}
         overflowX="auto"
         >
-          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-          <TableContainer rounded='lg' mt={10} w="110vh">
+          <Box border="1px" mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <TableContainer rounded='lg' mt={5} w="110vh">
             <Table variant='simple' colorScheme='facebook' size="md" pos="static">
                 <Thead>
-                    <Tr><Th>Personal Positions</Th></Tr>
+                    <Tr><Th><Heading size="sm" letterSpacing="0">Personal Positions</Heading></Th></Tr>
                 </Thead>
                 <Thead>
                   <Tr>
@@ -536,13 +546,13 @@ function someFunc () {
                   </TableContainer>
                   </Box>
 
-<Box rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+<Box border="1px" borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
 <Accordion justifyContent="center" w="100vh" defaultIndex={[0]} allowMultiple>
 <AccordionItem rounded='lg'>
   <h2>
     <AccordionButton>
-      <Box m="10px" flex='1' textAlign='left'>
-        <Heading size="sm" >Manage loan</Heading>
+      <Box pb="10px" m="10px" flex='1' textAlign='left'>
+        <Heading size="sm" mt="5px">Manage loan</Heading>
       </Box>
       <AccordionIcon />
     </AccordionButton>

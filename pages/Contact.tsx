@@ -162,7 +162,7 @@ import {
   
                       <InputGroup>
                         <InputLeftElement>
-                            <MdOutlineEmail>
+                          <MdOutlineEmail>
                             </MdOutlineEmail>
                         </InputLeftElement>
                         <Input
