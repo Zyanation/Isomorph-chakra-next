@@ -1,4 +1,4 @@
-import { Mainnet, DAppProvider, useEtherBalance, useEthers, Config } from '@usedapp/core'
+import { Mainnet, DAppProvider, useEtherBalance, useEthers, Config, ChainId } from '@usedapp/core'
 import { signIn, signOut, useSession } from "next-auth/react"
 import styles from "./header.module.css"
 
@@ -9,7 +9,7 @@ import { formatEther } from "@ethersproject/units";
 
 import NextLink from 'next/link'
 
-import { PhoneIcon, AddIcon, WarningIcon, DeleteIcon } from '@chakra-ui/icons'
+import { PhoneIcon, AddIcon, WarningIcon, DeleteIcon, CheckIcon, WarningTwoIcon } from '@chakra-ui/icons'
 
 import {
   Container,
@@ -54,7 +54,7 @@ export default function WithSubnavigation() {
   
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const { account, deactivate, activateBrowserWallet} = useEthers()
+  const { account, deactivate, activateBrowserWallet, chainId } = useEthers()
   // const etherBalance = useEtherBalance(account)ss
 
   const [ short_account, setshort_account ] = useState()
@@ -65,6 +65,14 @@ export default function WithSubnavigation() {
     setshort_account(_short_account)
     }
   }, [account])
+
+  // useEffect(() => {
+
+    
+    
+  // }, [chainId])
+
+  
 
   return (
     <Box>
@@ -106,7 +114,7 @@ export default function WithSubnavigation() {
             Isomorph
           </Text>
           
-
+          {/* Lefthand side Nav */}
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav />
           </Flex>
@@ -116,27 +124,34 @@ export default function WithSubnavigation() {
           flex={{ base: 1, md: 0 }}
           justify={'flex-end'}
           direction={'row'}
-          spacing={6}>
-          <Button onClick={toggleColorMode}>
+          spacing={7}>
+          <Button m="auto" 
+          onClick={toggleColorMode}>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
 
           <Button
+            color={useColorModeValue('gray.800', 'white.500')}
             as={'a'}
+            bgColor={chainId == 42 ? "teal" : "red.700"}
             fontSize={'sm'}
-            fontWeight="bold"
-            variant={'link'}
-            href={'#'}>
-            Sign In
+            fontWeight={"bold"}
+            variant={'solid'}
+            >
+            {chainId == 42 ? <><CheckIcon w={5} h={5} mr="5px" color="green.800" /><Text size="sm">Network : <b>Kovan</b></Text></> 
+            :
+
+            <><WarningTwoIcon w={5} h={5} mr="5px" color="yellow.300" /><Text size="sm">Network : <b>{ChainId[chainId]}</b></Text></> 
+             }
           </Button>
           
-
+          
 
         <HStack w="160px">
           {account ? 
           
           (
-            <HStack w="160px">
+            <HStack w="180px">
             <Text fontSize='sm'><Text><b>Connected as:</b></Text> {short_account}</Text> 
             <Button
                   size='xs'
@@ -401,6 +416,7 @@ const NAV_ITEMS: Array<NavItem> = [
 
 const WalletConnect = () => {
   const { activateBrowserWallet} = useEthers()
+  
 
   return (
 

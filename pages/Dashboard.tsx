@@ -100,15 +100,22 @@ const Dashboard = ({...pageProps}) => {
 
   const mousdInterface = new utils.Interface(mousd_abi)
   
-  const { account } = useEthers()
+  const { account, chainId } = useEthers()
   const [signer, setSigner] = useState(null);
   // const etherBalance = useEtherBalance(account)
 
   const handleGetSigner = async () => {
-    let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
-    const newsigner = await tempProvider.getSigner()
-    await setSigner(newsigner)
-    console.log(signer)
+    try {
+      console.log("huh")
+      let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
+      const newsigner = tempProvider.getSigner()
+      setSigner(newsigner)
+      await wait(2000)
+      console.log("signer", signer)
+    } catch (err) {
+      console.log(err)
+    }
+
   }
 
 
@@ -247,16 +254,17 @@ const Dashboard = ({...pageProps}) => {
   let { state, send } = useContractFunction(useContract, useMethod, { transactionName: useMethod, signer: signer })
 
   const handlesusdapprove = async () => {
-    if(!signer) {
-      handleGetSigner()
-    }
+    console.log(signer)
+   
+    handleGetSigner()
+    
 
-    await wait(200)
+
+    
     setDisabled(true)
     await setMethod("approve")
     await setContract(susdcontract)
-    await wait(200)
-    send(contractAddress, "1000000000000000000000000000000000000000000")
+    send(contractAddress, "1000000000000000000000000000000000000000")
   
 }
 
@@ -264,6 +272,8 @@ const [sliderValue, setSliderValue] = useState(50)
 const [loanslidervalue, setloanslidervalue] = useState(50)
 
   const handleOpenloanclick = async () => {
+
+    handleGetSigner()
 
     setDisabled(true)
 
@@ -274,9 +284,6 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     
     await setMethod("openLoan")
     await setContract(contract)
-
-
-    await wait(500)
 
     // console.log("sdsd", typeof(utils.parseUnits(sliderValue.toString())), typeof(utils.parseUnits(loanval)))
     // console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
@@ -319,7 +326,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
    
 
   
-  }, [account, signer])
+  }, [account, signer, chainId])
 
 
 
@@ -371,7 +378,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
       setisLoading(false)
       toast({
         position: 'bottom',
-        title: 'Success',
+        title: 'Error',
         description: "Transaction reverted",
         status: 'error',
         duration: 4000,
@@ -380,6 +387,26 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     }
 
   }, [state.status])
+
+
+
+  // handle wrong chain events
+
+  useEffect(() => {
+
+    if(chainId != 42)
+    {
+      toast({
+        position: 'top',
+        title: 'Wrong network',
+        description: "Please switch to Kovan test net",
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+
+  }, [chainId])
 
   function ethersToNum (_num : string) {
     if(!_num) return
@@ -475,7 +502,7 @@ function someFunc () {
                   <option value='eth'>Ethereum</option>
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
-                  { selectedCollatName=="susd" ?
+                  { selectedCollatName=="susd" && chainId == 42 ?
                   <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
                   :
                   <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handlesusdapprove}>Approve</Button>
@@ -508,7 +535,7 @@ function someFunc () {
                     onClick={
                       someFunc
                     } isLoading={isLoading}
-                    isDisabled={signer ? false : true}>Confirm</Button>
+                    isDisabled={signer && chainId == 42 ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
