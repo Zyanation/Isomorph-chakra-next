@@ -53,7 +53,7 @@ function MyApp({ Component, pageProps}) {
 
 
   return (
-    // <WagmiConfig>
+
     <SessionProvider session={pageProps.session} refetchInterval={0}>
     <ChakraProvider theme={theme}>
     <DAppProvider config={config}>
@@ -64,7 +64,7 @@ function MyApp({ Component, pageProps}) {
     </DAppProvider>
     </ChakraProvider>
     </SessionProvider>
-    // </WagmiConfig>
+    
   )
   
   
