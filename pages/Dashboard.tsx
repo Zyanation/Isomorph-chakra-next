@@ -257,10 +257,14 @@ const [sliderValue, setSliderValue] = useState(50)
 
     await wait(500)
 
-    send(SUSD_ADDR, utils.formatEther(sliderValue), loanval)
+    // console.log("sdsd", typeof(utils.parseUnits(sliderValue.toString())), typeof(utils.parseUnits(loanval)))
+    // send(SUSD_ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanval).toString())
 
-    console.log("sliderval", sliderValue, "loanval", loanval)
-    // console.log(typeof(utils.formatEther(sliderValue)), typeof(utils.formatEther(loanval)))
+    console.log("slider",typeof(sliderValue),"loanslidervalue", typeof(loanslidervalue))
+
+
+
+
 
  
 

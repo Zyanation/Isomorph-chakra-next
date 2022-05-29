@@ -8,6 +8,7 @@ import Layout from '../components/Layout'
 import { ChakraProvider, useColorMode } from '@chakra-ui/react'
 import react from 'react'
 import { useState, useEffect, createContext } from 'react'
+import wait from 'wait'
 
 import theme from "../themes/index"
 
@@ -25,24 +26,27 @@ const config: Config = {
 
 
 
-function MyApp({ Component, pageProps, initialColorMode}) {
+function MyApp({ Component, pageProps}) {
 
   const { account } = useEthers()
   const etherBalance = useEtherBalance(account)
+
   const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
-    console.log(localStorage.getItem('chakra-ui-color-mode'));
+
 
     if (localStorage.getItem('chakra-ui-color-mode') === 'light' && colorMode === 'dark') {
       console.log("light to dark")
-      setTimeout(() => toggleColorMode(), 1500)
+      toggleColorMode()
     } else if (localStorage.getItem('chakra-ui-color-mode') === 'dark' && colorMode === 'light') {
       console.log("dark to light")
-      setTimeout(() => toggleColorMode(), 1500)
+      toggleColorMode()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+
   
 
 
@@ -50,12 +54,11 @@ function MyApp({ Component, pageProps, initialColorMode}) {
     <ChakraProvider theme={theme}>
     <DAppProvider config={config}>
     <Layout>
-        <Component {...pageProps} />
+        <Component {...pageProps}/>
     </Layout>
 
     </DAppProvider>
     </ChakraProvider>
-
   )
   
   
