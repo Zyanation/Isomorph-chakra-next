@@ -192,7 +192,7 @@ const Dashboard = ({...pageProps}) => {
         toast({
           position: 'bottom',
           title: 'Stop, you criminal scum!',
-          description: "Sorry, but we currently do not support Ethereum on the Kovan test net. :(",
+          description: "Sorry, but we currently do not support Ethereum yet :(",
           status: 'warning',
           duration: 4000,
           isClosable: true,
@@ -207,7 +207,7 @@ const Dashboard = ({...pageProps}) => {
         toast({
           position: 'bottom',
           title: 'Stop, you criminal scum!',
-          description: "Sorry, but we currently do not support Lyra LP tokens on the Kovan test net. :(",
+          description: "Sorry, but we currently do not support Lyra LP tokens yet :(",
           status: 'warning',
           duration: 4000,
           isClosable: true,
