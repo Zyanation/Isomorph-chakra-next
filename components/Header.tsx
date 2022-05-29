@@ -3,7 +3,6 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import styles from "./header.module.css"
 
 import { useState, useEffect } from "react";
-import { Web3Provider } from "@ethersproject/providers";
 
 import { formatEther } from "@ethersproject/units";
 
