@@ -5,6 +5,7 @@ import styles from "./header.module.css"
 import { useState, useEffect } from "react";
 
 import { formatEther } from "@ethersproject/units";
+import { useRouter } from 'next/router';
 
 import NextLink from 'next/link'
 
@@ -42,6 +43,8 @@ import {
 } from '@chakra-ui/icons';
 
 export default function WithSubnavigation() {
+
+
 
   const { data: session, status } = useSession()
   const loading = status === "loading"
@@ -201,7 +204,7 @@ const DesktopNav = () => {
   const { account } = useEthers()
   // const etherBalance = useEtherBalance(account)
 
-
+  const router = useRouter();
 
 
   return (
@@ -214,35 +217,45 @@ const DesktopNav = () => {
         Click me
       </Button> */}
 
-    <Stack direction={'row'} spacing={6} mt='10px'>
+    <Stack direction={'row'} spacing={6} mt='3px'>
 
 
 
-          <NextLink href="/#"><Link><Text fontWeight="bold" fontSize='14px'>ABOUT</Text></Link></NextLink>
-            <NextLink className="nav-link" href={"./Dashboard"}
-                // errorMessage = {errorMessage}
-                // setErrorMessage =  {setErrorMessage}
-                // defaultAccount =  {defaultAccount}
-                // setDefaultAccount =  {setDefaultAccount}
-                // connButtonText =  {connButtonText}
-                // setConnButtonText =  {setConnButtonText}
-                // provider =  {provider}
-                // setProvider =  {setProvider}
-                // signer =  {signer}
-                // setSigner =  {setSigner}
-                // contract =  {contract}
-                // setContract =  {setContract}
-                // contractAddress =  {contractAddress}
-                // connectWalletHandler =  {connectWalletHandler}
-                // accountChangedHandler =  {accountChangedHandler}
-                // updateEthers =  {updateEthers}
-                >
-            <Link><Text fontWeight="bold" fontSize='14px'>DASHBOARD</Text></Link>
+          <NextLink href="/#">
+            {router.pathname == "/" ? <Button size="sm" fontWeight="bold" fontSize='14px' color="purple.400">ABOUT</Button>
+            :
+            <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost">ABOUT</Button>
+            }
+          </NextLink>
+
+          <NextLink className="nav-link" href={"./Dashboard"}>
+            {router.pathname == "/Dashboard" ? <Button size="sm" fontWeight="bold" fontSize='14px' color="purple.400">DASHBOARD</Button>
+            :
+            <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost">DASHBOARD</Button>
+            }
           </NextLink>
           
-          <Link href="https://optimism.curve.fi/" isExternal><Text fontWeight="bold" fontSize='14px'>TRADE MOUSD</Text></Link>
-          <NextLink href="/#"><Link><Text fontWeight="bold" fontSize='14px'>BUG BOUNTY</Text></Link></NextLink>
-          <NextLink href="/Contact"><Link><Text fontWeight="bold" fontSize='14px'>CONTACT US</Text></Link></NextLink>
+          <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost">
+          <a target='_blank' href="https://optimism.curve.fi/">
+          TRADE MOUSD
+          </a>
+          </Button>
+          
+          <NextLink href="/#">
+            {router.pathname == "/BugBounty" ? 
+            <Button size="sm" fontWeight="bold" fontSize='14px' color="purple.400">BUG BOUNTY</Button>
+            :
+            <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost" isDisabled={true}>BUG BOUNTY</Button>
+            }
+          </NextLink>
+
+          <NextLink href="/Contact">
+            {router.pathname == "/Contact" ? 
+            <Button size="sm" fontWeight="bold" fontSize='14px' color="purple.400">CONTACT US</Button>
+            :
+            <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost">CONTACT US</Button>
+            }
+          </NextLink>
 
       
     </Stack>

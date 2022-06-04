@@ -119,7 +119,22 @@ const Dashboard = ({...pageProps}) => {
   }
 
 
-
+  const confetti = {
+    light: {
+      primary: 'BEE3F8', // blue.400
+      secondary: 'BEE3F8', // blue.100
+    },
+  
+    dark: {
+      primary: '1A365D', // blue.900
+      secondary: '2A4365', // blue.800
+    },
+  };
+  
+  const CONFETTI_LIGHT = `url("data:image/svg+xml,%3Csvg width='84' height='48' viewBox='0 0 84 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h12v6H0V0zm28 8h12v6H28V8zm14-8h12v6H42V0zm14 0h12v6H56V0zm0 8h12v6H56V8zM42 8h12v6H42V8zm0 16h12v6H42v-6zm14-8h12v6H56v-6zm14 0h12v6H70v-6zm0-16h12v6H70V0zM28 32h12v6H28v-6zM14 16h12v6H14v-6zM0 24h12v6H0v-6zm0 8h12v6H0v-6zm14 0h12v6H14v-6zm14 8h12v6H28v-6zm-14 0h12v6H14v-6zm28 0h12v6H42v-6zm14-8h12v6H56v-6zm0-8h12v6H56v-6zm14 8h12v6H70v-6zm0 8h12v6H70v-6zM14 24h12v6H14v-6zm14-8h12v6H28v-6zM14 8h12v6H14V8zM0 8h12v6H0V8z' fill='%23${confetti.light.primary}' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`;
+  const CONFETTI_DARK = `background-color: #2a4365;
+  background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%231a365d' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");`
+  
   
 
 
@@ -191,7 +206,7 @@ const Dashboard = ({...pageProps}) => {
 
         toast({
           position: 'bottom',
-          title: 'Stop, you criminal scum!',
+          title: 'Coming soon',
           description: "Sorry, but we currently do not support Ethereum yet :(",
           status: 'warning',
           duration: 4000,
@@ -206,7 +221,7 @@ const Dashboard = ({...pageProps}) => {
 
         toast({
           position: 'bottom',
-          title: 'Stop, you criminal scum!',
+          title: 'Coming soon',
           description: "Sorry, but we currently do not support Lyra LP tokens yet :(",
           status: 'warning',
           duration: 4000,
@@ -460,19 +475,23 @@ function someFunc () {
 
     {/* main box */}
     <Flex
+    
+    css={{
+      backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
+      backgroundAttachment: 'fixed',
+    }}
     flexDir="row"
-    maxW={1700}
-    w={[300, 500, 1700]}
+    maxW={1900}
+    w={[300, 500, 1900]}
     align="center"
     justify="center"
     minH="80vh"
     mx="auto"
-    mt="5vh"
+    mb="-10vh"
     px={4}
     >
         {/* left box */}
         <Flex
-        border="1px"
         flexDir="column"
         maxW={800}
         w={[150, 300, 500]}
@@ -481,7 +500,6 @@ function someFunc () {
         justify="flex-start"
         minH="80vh"
         mx="auto"
-        mt="5vh"
         px={4}
         backgroundColor={useColorModeValue('gray.100', 'blackAlpha.700')}
         rounded='lg'
@@ -502,7 +520,7 @@ function someFunc () {
                   <option value='eth'>Ethereum</option>
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
-                  { selectedCollatName=="susd" && chainId == 42 ?
+                  { selectedCollatName=="susd" && chainId == 42 && account ?
                   <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
                   :
                   <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handlesusdapprove}>Approve</Button>
@@ -514,15 +532,25 @@ function someFunc () {
 
             
                 
-                <SlidebarCollateral selectedCollatReadableBalance={selectedCollatReadableBalance} sliderValue={sliderValue} setSliderValue={setSliderValue}/>
+                <SlidebarCollateral 
+                selectedCollatReadableBalance={selectedCollatReadableBalance}
+                 sliderValue={sliderValue} 
+                 setSliderValue={setSliderValue}
+                 loanslidervalue={loanslidervalue}
+                 setloanslidervalue={setloanslidervalue}
+                 />
                 
 
 
             
 
-              <SlidebarLoan sliderValue={sliderValue} loanslidervalue={loanslidervalue} setloanslidervalue={setloanslidervalue}></SlidebarLoan>
+              <SlidebarLoan 
+              sliderValue={sliderValue} 
+              loanslidervalue={loanslidervalue} 
+              setloanslidervalue={setloanslidervalue}
+              ></SlidebarLoan>
 
-              <Text pt="10vh" pb="10vh">Some info here: <br></br><br></br>
+              <Text pt="10vh" pb="10vh"> <br></br><br></br>
                  <br></br>
                 
               </Text>
@@ -535,7 +563,7 @@ function someFunc () {
                     onClick={
                       someFunc
                     } isLoading={isLoading}
-                    isDisabled={signer && chainId == 42 ? false : true}>Confirm</Button>
+                    isDisabled={signer && chainId == 42 && account && selectedCollatName == "susd" ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -556,7 +584,7 @@ function someFunc () {
         px={4}
         overflowX="auto"
         >
-          <Box border="1px" mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
           <TableContainer rounded='lg' mt={5} w="110vh">
             <Table variant='simple' colorScheme='facebook' size="md" pos="static">
                 <Thead>
@@ -599,8 +627,8 @@ function someFunc () {
                   </TableContainer>
                   </Box>
 
-<Box border="1px" borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-<Accordion justifyContent="center" w="100vh" defaultIndex={[0]} allowMultiple>
+<Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+<Accordion justifyContent="center" w="110vh" defaultIndex={[0]} allowMultiple>
 <AccordionItem rounded='lg'>
   <h2>
     <AccordionButton>
@@ -647,11 +675,8 @@ function someFunc () {
 export default Dashboard
 
 
-function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSliderValue}) {
+function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSliderValue, loanslidervalue, setloanslidervalue}) {
   
-
-
-
 
   const labelStyles = {
     mt: '2',
@@ -665,7 +690,19 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
         
       <NumberInput position="absolute" width="500px" size="md" defaultValue={15} 
       max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} 
-      value={sliderValue ? sliderValue : 0} onChange={(val) => setSliderValue(val)}>
+      value={sliderValue ? sliderValue : 0} 
+      onChange={(val) => {
+        
+        
+        setSliderValue(val)
+
+        if(val < loanslidervalue) {
+          setloanslidervalue(val)
+        }
+        
+        
+        
+        }}>
         <HStack justifyContent='space-between' spacing="20px" width="430px">
         <NumberInputField />
         <Button size="sm" right="80px" position="absolute" colorScheme="red" variant="outline" 
@@ -673,11 +710,21 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
         </HStack>
       
       </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="380px" aria-label='slider-ex-6' max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} value={sliderValue ? sliderValue : 0} onChange={(val) => setSliderValue(val)}>
+      <Slider alignContent="flex-start" mt="50px" minW="380px" aria-label='slider-ex-6' 
+      max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} 
+      value={sliderValue ? sliderValue : 0} 
+      onChange={(val) => {
+        setSliderValue(val)
+
+        if(val < loanslidervalue) {
+          setloanslidervalue(val)
+        }
+        
+        }}>
  
 
           <SliderTrack>
-            <SliderFilledTrack />
+            <SliderFilledTrack bg='purple.400'/>
           </SliderTrack>
           <SliderThumb />
         
@@ -701,7 +748,11 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
   return (
     <Box pt={6} pb={2}>
       <Heading mb="15px" size="sm">Loan amount: </Heading>
-      <NumberInput width="10px" size="md" defaultValue={15} max={sliderValue} value={loanslidervalue} onChange={(val) => setloanslidervalue(val)}>
+      <NumberInput width="10px" size="md" 
+      defaultValue={15} 
+      max={sliderValue} 
+      value={loanslidervalue ? loanslidervalue : 0} 
+      onChange={(val) => setloanslidervalue(val)}>
         <HStack justifyContent='space-between' width="430px">
         <NumberInputField />
         </HStack>
@@ -710,7 +761,7 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
       <Slider width="400px" aria-label='slider-ex-6' max={sliderValue} onChange={(val) => setloanslidervalue(val)}>
  
   <SliderTrack>
-    <SliderFilledTrack />
+    <SliderFilledTrack bg='purple.400'/>
   </SliderTrack>
   <SliderThumb />
 </Slider>
@@ -760,7 +811,7 @@ function AddCollat({contract, signer}) {
     
 
               <SliderTrack>
-                <SliderFilledTrack />
+                <SliderFilledTrack bg='purple.400'/>
               </SliderTrack>
               <SliderThumb />
             
@@ -811,7 +862,7 @@ function AddLoan({contract, signer}) {
 
 
           <SliderTrack>
-            <SliderFilledTrack />
+            <SliderFilledTrack bg='purple.400'/>
           </SliderTrack>
           <SliderThumb />
         
@@ -861,7 +912,7 @@ function RemoveCollat({contract, signer}) {
 
 
           <SliderTrack>
-            <SliderFilledTrack />
+            <SliderFilledTrack bg='purple.400'/>
           </SliderTrack>
           <SliderThumb />
         
@@ -913,7 +964,7 @@ function RepayLoan({contract, signer}) {
 
 
           <SliderTrack>
-            <SliderFilledTrack />
+            <SliderFilledTrack bg='purple.400'/>
           </SliderTrack>
           <SliderThumb />
         
