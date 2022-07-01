@@ -236,7 +236,7 @@ const DesktopNav = () => {
           </NextLink>
           
           <Button size="sm" fontWeight="bold" fontSize='14px' variant="ghost">
-          <a target='_blank' href="https://optimism.curve.fi/">
+          <a target='_blank' rel="noreferrer" href="https://optimism.curve.fi/">
           TRADE MOUSD
           </a>
           </Button>
