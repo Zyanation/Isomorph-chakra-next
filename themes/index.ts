@@ -5,7 +5,7 @@ import {extendTheme,
      
 
 const config = {
-    useSystemColorMode: false,
+    useSystemColorMode: true,
     // initialColorMode: 'dark',
     
 }

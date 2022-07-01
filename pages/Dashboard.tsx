@@ -93,10 +93,10 @@ import { off } from 'process'
 const Dashboard = ({...pageProps}) => {
 
   const toast = useToast()
-  const MOUSD_ADDR = '0xBd008Bdd48b391CaF1523efb966F2288F555bbE0'
-  const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
+  const MOUSD_ADDR = '0x015e9974A55220FEdEe0EFd1baD663802623302C'
+  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
-  const contractAddress = '0xABbbaF21B366e27DFe65d7347cDa5D7C007acdd5'
+  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
   const mousdInterface = new utils.Interface(mousd_abi)
   
@@ -539,6 +539,15 @@ function someFunc () {
                  loanslidervalue={loanslidervalue}
                  setloanslidervalue={setloanslidervalue}
                  />
+
+                {/* {SlidebarCollateral(
+                  {selectedCollatReadableBalance : selectedCollatReadableBalance,
+                    sliderValue : sliderValue,
+                    setSliderValue : setSliderValue,
+                    loanslidervalue : loanslidervalue,
+                    setloanslidervalue : setloanslidervalue
+                  }
+                )} */}
                 
 
 
@@ -773,9 +782,9 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
 function AddCollat({contract, signer}) {
       const [addcollatvalue, setaddcollatvalue] = useState(0)
 
-      const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
+      const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
-      const contractAddress = '0xABbbaF21B366e27DFe65d7347cDa5D7C007acdd5'
+      const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
       
 
@@ -790,8 +799,9 @@ function AddCollat({contract, signer}) {
 
       const handleAddCollatClick = () => {
     
-        console.log(contract)
-        send(SUSD_ADDR, "1000000")
+        console.log("calling add loan", contract, signer)
+        console.log("values sending", SUSD_ADDR, addcollatvalue)
+        send(SUSD_ADDR, utils.parseUnits(addcollatvalue.toString()))
 
       }
 
@@ -803,7 +813,7 @@ function AddCollat({contract, signer}) {
           Add collateral :
           <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
             <HStack justifyContent='space-between' spacing="20px" width="230px">
-            <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
+            <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={false}>Add</Button>
             </HStack>
           
           </NumberInput>
@@ -824,9 +834,9 @@ function AddCollat({contract, signer}) {
 function AddLoan({contract, signer}) {
   const [addcollatvalue, setaddcollatvalue] = useState(0)
 
-  const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
+  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
-  const contractAddress = '0xABbbaF21B366e27DFe65d7347cDa5D7C007acdd5'
+  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
   
 
@@ -841,8 +851,11 @@ function AddLoan({contract, signer}) {
 
   const handleAddCollatClick = () => {
 
-    console.log(contract)
+    console.log("contract and signer", contract, signer)
     send(SUSD_ADDR, "1000000")
+
+    // utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString())
+    
 
   }
 
@@ -874,9 +887,9 @@ function AddLoan({contract, signer}) {
 function RemoveCollat({contract, signer}) {
   const [addcollatvalue, setaddcollatvalue] = useState(0)
 
-  const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
+  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
-  const contractAddress = '0xABbbaF21B366e27DFe65d7347cDa5D7C007acdd5'
+  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
   
 
@@ -926,9 +939,9 @@ function RemoveCollat({contract, signer}) {
 function RepayLoan({contract, signer}) {
   const [addcollatvalue, setaddcollatvalue] = useState(0)
 
-  const SUSD_ADDR = '0xd67CE643E4d4f530a66840F7f2AAa806FcE7C960'
+  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
-  const contractAddress = '0xABbbaF21B366e27DFe65d7347cDa5D7C007acdd5'
+  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
   
 

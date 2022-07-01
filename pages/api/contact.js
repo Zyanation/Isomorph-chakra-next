@@ -33,7 +33,7 @@ export default function (req, res) {
     }
 
     transporter.sendMail(mailData, function (err, info) {
-        if(err)
+        if(err)Mans
           console.log(err)
         else
           console.log(info)

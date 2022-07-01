@@ -35,18 +35,18 @@ function MyApp({ Component, pageProps}) {
 
   const { colorMode, toggleColorMode } = useColorMode();
 
-  useEffect(() => {
+  // useEffect(() => {
 
 
-    if (localStorage.getItem('chakra-ui-color-mode') === 'light' && colorMode === 'dark') {
-      console.log("light to dark")
-      toggleColorMode()
-    } else if (localStorage.getItem('chakra-ui-color-mode') === 'dark' && colorMode === 'light') {
-      console.log("dark to light")
-      toggleColorMode()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  //   if (localStorage.getItem('chakra-ui-color-mode') === 'light' && colorMode === 'dark') {
+  //     console.log("light to dark")
+  //     toggleColorMode()
+  //   } else if (localStorage.getItem('chakra-ui-color-mode') === 'dark' && colorMode === 'light') {
+  //     console.log("dark to light")
+  //     toggleColorMode()
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
 
   
