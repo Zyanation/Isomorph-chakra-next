@@ -95,6 +95,7 @@ const Dashboard = ({...pageProps}) => {
   const toast = useToast()
   const MOUSD_ADDR = '0x015e9974A55220FEdEe0EFd1baD663802623302C'
   const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
+  const LYRA_ADDR = '0xf4f4Bb8D73A5eB5a8586E77dDb334C16AB30ff6A'
 
   const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
@@ -102,6 +103,7 @@ const Dashboard = ({...pageProps}) => {
   
   const { account, chainId } = useEthers()
   const [signer, setSigner] = useState(null);
+  const [addcollatvalue, setaddcollatvalue] = useState(0)
   // const etherBalance = useEtherBalance(account)
 
   const handleGetSigner = async () => {
@@ -140,7 +142,7 @@ const Dashboard = ({...pageProps}) => {
 
  
 
-  const contract = new Contract(contractAddress, mousdInterface)
+  // const contract = new Contract(contractAddress, mousdInterface)
 
   const provider = new ethers.providers.InfuraProvider("kovan", process.env.NEXT_PUBLIC_KOVAN_INFURA);
   const contract_provider = new ethers.Contract(contractAddress, mousd_abi, provider);
@@ -157,7 +159,8 @@ const Dashboard = ({...pageProps}) => {
   //   return undefined
   // }
 
-  const collatBalance = useTokenBalance(SUSD_ADDR, account)
+  const [ADDR, setADDR] = useState("")
+  const collatBalance = useTokenBalance(ADDR, account)
 
 
   const [isDisabled, setDisabled] = useState(false);
@@ -187,20 +190,24 @@ const Dashboard = ({...pageProps}) => {
   const [selectedCollatReadableBalance, setSelectedCollatReadableBalance] = useState("")
 
 
-
+  const [SelectedCollatFromInput, setSelectedCollatFromInput] = useState("")
 
   const getWalletCollatBalance = async (_SelectedCollatFromInput) => {
 
-    let ADDR
+
+
 
     switch(_SelectedCollatFromInput) {
       case "susd":
         console.log("susded")
-
-        ADDR = SUSD_ADDR
+        setisLoading(true)
+        
+        await setADDR(SUSD_ADDR)
+        await setSelectedCollatFromInput("susd")
         break;
       case "eth":
-        ADDR = undefined
+        await setADDR(undefined)
+        await setSelectedCollatFromInput("")
 
         console.log("ethed")
 
@@ -214,39 +221,82 @@ const Dashboard = ({...pageProps}) => {
         })
         break;
       case "lyralp":
-        
-        ADDR = undefined
+        await setisLoading(true)
+        await setADDR(LYRA_ADDR)
+        await setSelectedCollatFromInput("lyralp")
 
         console.log("lyralped")
 
-        toast({
-          position: 'bottom',
-          title: 'Coming soon',
-          description: "Sorry, but we currently do not support Lyra LP tokens yet :(",
-          status: 'warning',
-          duration: 4000,
-          isClosable: true,
-        })
-        break;
+        // toast({
+        //   position: 'bottom',
+        //   title: 'Coming soon',
+        //   description: "Sorry, but we currently do not support Lyra LP tokens yet :(",
+        //   status: 'warning',
+        //   duration: 4000,
+        //   isClosable: true,
+        // })
+        // break;
     }
 
-    if (_SelectedCollatFromInput == "susd") {
-      const walletcollatval = await contract_provider.collateralPosted(contractAddress, ADDR)
-      await setcollateralPosted(walletcollatval)
-      setselectedCollatName("susd")
+   
+    
+  }
+
+
+
+
+  useEffect(() => {
+
+    if (!account) return
+
+
+    if (SelectedCollatFromInput != undefined) {
+
+      const _handlecollatforminput = async () => {
+        setisLoading(true)
+
+        //Prepare for contract methods and contract instance
+        let temp_contract = new ethers.Contract(ADDR, gen_ABI, signer);
+
+        await handleGetSigner()
+        setisLoading(true)
+        await setMethod("approve")
+        await setContract(temp_contract)
+
+
+        //set collateral states
+        const walletcollatval = contract_provider.collateralPosted(contractAddress, ADDR)
+        await setcollateralPosted(walletcollatval)
+        await setselectedCollatName(SelectedCollatFromInput)
+        console.log("selected collat input", SelectedCollatFromInput)
+
+
+        
+
+  
+
+      }
+
+
+
+      _handlecollatforminput()
+
     
 
-    } else {
-      await setcollateralPosted(0)
-      await setSelectedCollatReadableBalance(0)
+    } 
+    
+    else {
+      setcollateralPosted(0)
+      setSelectedCollatReadableBalance(0)
       setselectedCollatName("")
       
 
 
     }
-   
-    
-  }
+
+
+
+  }, [SelectedCollatFromInput])
 
   const handleLoadDashboardValues = async () => {
 
@@ -261,25 +311,22 @@ const Dashboard = ({...pageProps}) => {
 
 
 
-  let susdcontract = new ethers.Contract(SUSD_ADDR, gen_ABI, signer);
+  let contract = new ethers.Contract(SUSD_ADDR, gen_ABI, signer);
 
   const [useContract, setContract] = useState()
   const [useMethod, setMethod] = useState("")
 
   let { state, send } = useContractFunction(useContract, useMethod, { transactionName: useMethod, signer: signer })
 
-  const handlesusdapprove = async () => {
+  const handleapprove = async () => {
     console.log(signer)
    
-    handleGetSigner()
-    
+
+      send(contractAddress, "1000000000000000000000000000000000000000")
 
 
+   
     
-    setDisabled(true)
-    await setMethod("approve")
-    await setContract(susdcontract)
-    send(contractAddress, "1000000000000000000000000000000000000000")
   
 }
 
@@ -323,25 +370,34 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
   useEffect(()=>{
     
     if(!account) return
-    
-    
-    if (selectedCollatName == "susd" && collatBalance) {
-      setSelectedCollatReadableBalance(utils.formatUnits(collatBalance))
-    }
-    
-    if(!signer) {
-      handleGetSigner()
-    }
-    
-
-    getLoanvalue()
-    getCollatvalue()
 
 
+
+      console.log("ADDR", ADDR)
+
+      if(!signer) {
+        setisLoading(true)
+        handleGetSigner()
+      }
+    
+    
+      if ((selectedCollatName == "susd" || selectedCollatName == "lyralp") && collatBalance) {
+        setisLoading(true)
+        setSelectedCollatReadableBalance(utils.formatUnits(collatBalance))
+      }
+      
+  
+      getLoanvalue()
+      getCollatvalue()
+
+      setisLoading(false)
+
+
+    
    
 
   
-  }, [account, signer, chainId])
+  }, [selectedCollatName])
 
 
 
@@ -520,10 +576,10 @@ function someFunc () {
                   <option value='eth'>Ethereum</option>
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
-                  { selectedCollatName=="susd" && chainId == 42 && account ?
-                  <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handlesusdapprove}>Approve</Button>
+                  { selectedCollatName=="susd" || selectedCollatName=="lyralp" && chainId == 42 && account ?
+                  <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handleapprove}>Approve</Button>
                   :
-                  <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handlesusdapprove}>Approve</Button>
+                  <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handleapprove}>Approve</Button>
 
                   }
                   
@@ -594,10 +650,10 @@ function someFunc () {
         overflowX="auto"
         >
           <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-          <TableContainer rounded='lg' mt={5} w="110vh">
+          <TableContainer rounded='lg' mt={5} w="120vh">
             <Table variant='simple' colorScheme='facebook' size="md" pos="static">
                 <Thead>
-                    <Tr><Th><Heading size="sm" letterSpacing="0">Personal Positions</Heading></Th></Tr>
+                    <Tr><Th><Heading size="sm">Personal Positions</Heading></Th></Tr>
                 </Thead>
                 <Thead>
                   <Tr>
@@ -606,20 +662,22 @@ function someFunc () {
                     <Th>Assets backing</Th>
                     <Th isNumeric>Value (USD)</Th>
                     <Th isNumeric>Liquidation price (USD)</Th>
+                    <Th>Interest rate</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  <Tr height="150px">
+                  <Tr height="100px">
 
                     {!account ? 
-                      <Box position="relative" alignSelf="center" left="450px" top="50px">No open positions</Box>
+                      <Box position="relative" alignSelf="center" left="350px" top="50px">No open positions</Box>
                   :
                     <>
                     <Td><StatNumber>{LoanDisplay && ethersToNum(LoanDisplay)} MOUSD</StatNumber></Td>
                     <Td><StatNumber>$ {LoanDisplay && ethersToNum(LoanDisplay)}</StatNumber></Td>
                     <Td><Text><StatNumber>{collateralPostedDisplay && ethersToNum(collateralPostedDisplay)} sUSD</StatNumber></Text></Td>
                     <Td isNumeric>{collateralPostedDisplay && ethersToNum(collateralPostedDisplay)}</Td>
-                    <Td isNumeric>{collateralPostedDisplay && ethersToNum(collateralPostedDisplay)/ethersToNum(LoanDisplay)*(ethersToNum(LoanDisplay))*0.6 }</Td>
+                    <Td isNumeric>{collateralPostedDisplay && parseInt(ethersToNum(collateralPostedDisplay)/ethersToNum(LoanDisplay)*(ethersToNum(LoanDisplay))*0.7).toFixed(2) }</Td>
+                    <Td>some stuff</Td>
                     </>
                   
                   }
@@ -637,7 +695,7 @@ function someFunc () {
                   </Box>
 
 <Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-<Accordion justifyContent="center" w="110vh" defaultIndex={[0]} allowMultiple>
+<Accordion justifyContent="center" w="120vh" defaultIndex={[0]} allowMultiple>
 <AccordionItem rounded='lg'>
   <h2>
     <AccordionButton>
@@ -653,7 +711,16 @@ function someFunc () {
 
                           <VStack>
                               <HStack ml="5vh" spacing="20vh" >
-                                    <AddCollat contract={contract} signer={signer}/>
+                                    <AddCollat
+                                    contract={contract}
+                                    useContract={useContract}
+                                    setContract={setContract}
+                                    setMethod={setMethod}
+                                    state={state}
+                                    send={send}
+                                    signer={signer} 
+                                    addcollatvalue={addcollatvalue} 
+                                    setaddcollatvalue={setaddcollatvalue} />
                                     <AddLoan contract={contract} signer={signer}/>
                               </HStack>
                           </VStack>
@@ -779,8 +846,8 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
 }
 
 
-function AddCollat({contract, signer}) {
-      const [addcollatvalue, setaddcollatvalue] = useState(0)
+function AddCollat({contract, state, send, setContract, useContract, useMethod, setMethod, signer, addcollatvalue, setaddcollatvalue}) {
+      
 
       const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
@@ -788,7 +855,7 @@ function AddCollat({contract, signer}) {
 
       
 
-      let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
+      // let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
 
 
       const labelStyles = {
@@ -797,9 +864,14 @@ function AddCollat({contract, signer}) {
         fontSize: 'sm',
       }
 
-      const handleAddCollatClick = () => {
+      const handleAddCollatClick = async () => {
+
+        await setMethod("increaseCollateralAmount")
+        await setContract(contractAddress)
+
+        console.log(useMethod, useContract)
     
-        console.log("calling add loan", contract, signer)
+        console.log("calling add loan", signer)
         console.log("values sending", SUSD_ADDR, addcollatvalue)
         send(SUSD_ADDR, utils.parseUnits(addcollatvalue.toString()))
 
@@ -811,7 +883,11 @@ function AddCollat({contract, signer}) {
         <Box pt={6} pb={2}>
       
           Add collateral :
-          <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+          <NumberInput position="absolute" width="370px" size="sm" 
+          defaultValue={15} 
+          max={maxaddcollatvalue} 
+          value={addcollatvalue ? addcollatvalue : 0} 
+          onChange={(val) => setaddcollatvalue(val)}>
             <HStack justifyContent='space-between' spacing="20px" width="230px">
             <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={false}>Add</Button>
             </HStack>
@@ -832,7 +908,7 @@ function AddCollat({contract, signer}) {
 
 
 function AddLoan({contract, signer}) {
-  const [addcollatvalue, setaddcollatvalue] = useState(0)
+  const [addloanvalue, setaddloanvalue] = useState(0)
 
   const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
@@ -840,7 +916,7 @@ function AddLoan({contract, signer}) {
 
   
 
-  let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
+  let { state, send } = useContractFunction(contract, "openLoan", { transactionName: "openLoan", signer: signer })
 
 
   const labelStyles = {
@@ -852,26 +928,26 @@ function AddLoan({contract, signer}) {
   const handleAddCollatClick = () => {
 
     console.log("contract and signer", contract, signer)
-    send(SUSD_ADDR, "1000000")
+    send(SUSD_ADDR, utils.parseUnits("1"), utils.parseUnits(addloanvalue.toString()))
 
     // utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString())
     
 
   }
 
-  const maxaddcollatvalue = 1000
+  const maxaddloanvalue = 1000
 
   return (
     <Box pt={6} pb={2}>
   
       Increase loan :
-      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Add</Button>
+        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={false}>Add</Button>
         </HStack>
       
       </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
 
 
           <SliderTrack>
@@ -885,7 +961,7 @@ function AddLoan({contract, signer}) {
 }
 
 function RemoveCollat({contract, signer}) {
-  const [addcollatvalue, setaddcollatvalue] = useState(0)
+  const [removecollatvalue, setremovecollatvalue] = useState(0)
 
   const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
@@ -893,7 +969,7 @@ function RemoveCollat({contract, signer}) {
 
   
 
-  let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
+  let { state, send } = useContractFunction(contract, "closeLoan", { transactionName: "closeLoan", signer: signer })
 
 
   const labelStyles = {
@@ -902,26 +978,26 @@ function RemoveCollat({contract, signer}) {
     fontSize: 'sm',
   }
 
-  const handleAddCollatClick = () => {
+  const handleRemoveCollatClick = () => {
 
     console.log(contract)
-    send(SUSD_ADDR, "1000000")
+    send(SUSD_ADDR, utils.parseUnits(removecollatvalue.toString()), utils.parseUnits("1"))
 
   }
 
-  const maxaddcollatvalue = 1000
+  const maxremovecollatvalue = 1000
 
   return (
     <Box pt={6} pb={2}>
   
       Remove collateral :
-      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Remove</Button>
+        <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleRemoveCollatClick} isDisabled={false}>Remove</Button>
         </HStack>
       
       </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
 
 
           <SliderTrack>
@@ -937,7 +1013,7 @@ function RemoveCollat({contract, signer}) {
 
 
 function RepayLoan({contract, signer}) {
-  const [addcollatvalue, setaddcollatvalue] = useState(0)
+  const [repayloanvalue, setrepayloanvalue] = useState(0)
 
   const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
@@ -945,7 +1021,7 @@ function RepayLoan({contract, signer}) {
 
   
 
-  let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
+  let { state, send } = useContractFunction(contract, "closeLoan", { transactionName: "closeLoan", signer: signer })
 
 
   const labelStyles = {
@@ -954,26 +1030,30 @@ function RepayLoan({contract, signer}) {
     fontSize: 'sm',
   }
 
-  const handleAddCollatClick = () => {
+  const handleRepayLoanClick = () => {
 
     console.log(contract)
-    send(SUSD_ADDR, "1000000")
+    send(SUSD_ADDR, utils.parseUnits("1"), utils.parseUnits(repayloanvalue.toString()))
 
   }
 
-  const maxaddcollatvalue = 1000
+  const maxrepayloanvalue = 1000
 
   return (
     <Box pt={6} pb={2}>
   
       Repay loan :
-      <NumberInput position="absolute" width="382px" size="sm" defaultValue={15} max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <NumberInput position="absolute" width="382px" size="sm" defaultValue={15} max={maxrepayloanvalue} value={repayloanvalue} onChange={(val) => setrepayloanvalue(val)}>
         <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={true}>Repay</Button>
+        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleRepayLoanClick} isDisabled={false}>Repay</Button>
         </HStack>
       
       </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+      <Slider alignContent="flex-start" mt="50px" minW="130px" 
+      aria-label='slider-ex-6' 
+      max={maxrepayloanvalue} 
+      value={repayloanvalue} 
+      onChange={(val) => setrepayloanvalue(val)}>
 
 
           <SliderTrack>
