@@ -41,7 +41,7 @@ import {
     StatNumber
   } from '@chakra-ui/react'
 
-export const ManagePositions = ({ADDR, useColorModeValue, contract_signer, signer, addcollatvalue, setaddcollatvalue}
+export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer, addcollatvalue, setaddcollatvalue}
     ) => {
 
         
@@ -49,7 +49,7 @@ export const ManagePositions = ({ADDR, useColorModeValue, contract_signer, signe
     <div>
 
 
-<Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+<Box borderTop="0px" rounded='lg' bgColor={UIcolor}>
 <Accordion justifyContent="center" w="120vh" allowMultiple>
 <AccordionItem rounded='lg'>
   <h2>
@@ -62,7 +62,7 @@ export const ManagePositions = ({ADDR, useColorModeValue, contract_signer, signe
     </AccordionButton>
   </h2>
   <AccordionPanel justifyContent="center" mb="10px" pb={4} fill="full" width="100vh">
-                  <VStack h="300px" bgColor={useColorModeValue('gray.100', 'blackAlpha.100')} alignItems="flex-start">
+                  <VStack h="300px" bgColor={UIcolor} alignItems="flex-start">
 
                           <VStack>
                               <HStack ml="5vh" spacing="20vh" >
