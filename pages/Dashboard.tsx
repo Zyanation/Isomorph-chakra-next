@@ -6,6 +6,10 @@ import { Contract } from '@ethersproject/contracts'
 import wait from 'wait'
 import util, { isObject } from 'util'
 
+import { HandleLoadDashboardValues } from '../components/HandleLoadDashboardValues'
+import { PersonalPositions } from '../components/PersonalPositions'
+import { ManagePositions } from '../components/ManagePositions'
+
 import mousd_abi from '../components/mousd_abi.json'
 
 import { useToast } from '@chakra-ui/react'
@@ -146,7 +150,7 @@ const Dashboard = ({...pageProps}) => {
 
   const provider = new ethers.providers.InfuraProvider("kovan", process.env.NEXT_PUBLIC_KOVAN_INFURA);
   const contract_provider = new ethers.Contract(contractAddress, mousd_abi, provider);
-  // const contract_signer = new ethers.Contract(contractAddress, mousd_abi, signer);
+  const contract_signer = new ethers.Contract(contractAddress, mousd_abi, signer);
 
   //the usedapp way
   // const { value, error } = useCall({
@@ -168,8 +172,12 @@ const Dashboard = ({...pageProps}) => {
 
   const [ loanval, setloanval ] = useState(0)
   const [ collateralPosted, setcollateralPosted ] = useState(0)
-  const [ collateralPostedDisplay, setcollateralPostedDisplay ] = useState(0)
-  const [ LoanDisplay, setLoanDisplay ] = useState(0)
+
+
+  const [ SUSDPostedDisplay, setSUSDPostedDisplay ] = useState('')
+  const [ SUSDLoanDisplay, setSUSDLoanDisplay ] = useState('')
+
+
   
 
   const getLoanvalue = async () => {
@@ -298,14 +306,7 @@ const Dashboard = ({...pageProps}) => {
 
   }, [SelectedCollatFromInput])
 
-  const handleLoadDashboardValues = async () => {
 
-    const _loanval = await contract_provider.moUSDLoaned(SUSD_ADDR, account)
-    const _collatval = await contract_provider.collateralPosted(SUSD_ADDR, account)
-
-    setLoanDisplay(_loanval)
-    setcollateralPostedDisplay(_collatval)
-  }
 
   let gen_ABI = ["function approve(address _spender, uint256 _value) public returns (bool success)", "function allowance(address owner, address spender)"]
 
@@ -410,8 +411,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
  
     // if there's no value of collateral posted yet
-    if(account){
-      handleLoadDashboardValues()
+    if(account && contract_provider){
+      HandleLoadDashboardValues(account, contract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, SUSD_ADDR)
     }
     
 
@@ -655,90 +656,79 @@ function someFunc () {
                 <Thead>
                     <Tr><Th><Heading size="sm">Personal Positions</Heading></Th></Tr>
                 </Thead>
-                <Thead>
-                  <Tr>
-                    <Th>MoUSD loaned</Th>
-                    <Th isNumeric>Value (USD)</Th>
-                    <Th>Assets backing</Th>
-                    <Th isNumeric>Value (USD)</Th>
-                    <Th isNumeric>Liquidation price (USD)</Th>
-                    <Th>Interest rate</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  <Tr height="100px">
-
-                    {!account ? 
-                      <Box position="relative" alignSelf="center" left="350px" top="50px">No open positions</Box>
-                  :
-                    <>
-                    <Td><StatNumber>{LoanDisplay && ethersToNum(LoanDisplay)} MOUSD</StatNumber></Td>
-                    <Td><StatNumber>$ {LoanDisplay && ethersToNum(LoanDisplay)}</StatNumber></Td>
-                    <Td><Text><StatNumber>{collateralPostedDisplay && ethersToNum(collateralPostedDisplay)} sUSD</StatNumber></Text></Td>
-                    <Td isNumeric>{collateralPostedDisplay && ethersToNum(collateralPostedDisplay)}</Td>
-                    <Td isNumeric>{collateralPostedDisplay && parseInt(ethersToNum(collateralPostedDisplay)/ethersToNum(LoanDisplay)*(ethersToNum(LoanDisplay))*0.7).toFixed(2) }</Td>
-                    <Td>some stuff</Td>
-                    </>
-                  
-                  }
-
-                      
-
-                    
+                
 
 
-                  </Tr>
-                  </Tbody>
+                {/* Entire personal loan position goes here!! */}
+
+                <PersonalPositions 
+                account={account}
+                _LoanDisplay={SUSDLoanDisplay}
+                _PostedDisplay={SUSDPostedDisplay}
+                ethersToNum={ethersToNum}
+                />
+
 
                   </Table>
                   </TableContainer>
                   </Box>
 
-<Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-<Accordion justifyContent="center" w="120vh" defaultIndex={[0]} allowMultiple>
-<AccordionItem rounded='lg'>
-  <h2>
-    <AccordionButton>
-      <Box pb="10px" m="10px" flex='1' textAlign='left'>
-        <Heading size="sm" mt="5px">Manage loan</Heading>
-        
-      </Box>
-      <AccordionIcon />
-    </AccordionButton>
-  </h2>
-  <AccordionPanel justifyContent="center" mb="10px" pb={4} fill="full" width="100vh">
-                  <VStack h="300px" bgColor={useColorModeValue('gray.100', 'blackAlpha.100')} alignItems="flex-start">
 
-                          <VStack>
-                              <HStack ml="5vh" spacing="20vh" >
-                                    <AddCollat
-                                    contract={contract}
-                                    useContract={useContract}
-                                    setContract={setContract}
-                                    setMethod={setMethod}
-                                    state={state}
-                                    send={send}
-                                    signer={signer} 
-                                    addcollatvalue={addcollatvalue} 
-                                    setaddcollatvalue={setaddcollatvalue} />
-                                    <AddLoan contract={contract} signer={signer}/>
-                              </HStack>
-                          </VStack>
+                  {useContract && setContract && signer ? 
+                  
+                                          /* Manage loan position!! */
+
+                                          <ManagePositions 
+                                          ADDR={SUSD_ADDR}
+                                          useColorModeValue={useColorModeValue}
+                                          contract_signer={contract_signer}
+                                          useContract={useContract}
+                                          setContract={setContract}
+                                          setMethod={setMethod}
+                                          state={state}
+                                          send={send}
+                                          signer={signer} 
+                                          addcollatvalue={addcollatvalue} 
+                                          setaddcollatvalue={setaddcollatvalue}
+                                          useContractFunction={useContractFunction}
+                                          
+                                          
+                                          />
+
+                                          :
+
+                                          <>
+                                          <Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+                                          <Accordion justifyContent="center" w="120vh" defaultIndex={[0]} allowMultiple>
+                                          <AccordionItem rounded='lg'>
+                                              <AccordionButton>
+                                                <Box pb="10px" m="10px" flex='1' textAlign='left'>
+                                                  <Heading size="sm" mt="5px">Manage loan</Heading>
+                                                  
+                                                </Box>
+                                                <AccordionIcon />
+                                              </AccordionButton>
+                                              </AccordionItem>
+                                          </Accordion>
+                                          </Box>
+                                          
+                                          
+                                          </>
+                
+                }
 
 
-                            <VStack >
-                              <HStack ml="5vh" spacing="17vh">
-                                    <RemoveCollat contract={contract} signer={signer}/>
-                                    <RepayLoan contract={contract} signer={signer}/>
-                              </HStack>
-                          </VStack>
-                  </VStack>
-    
 
-  </AccordionPanel>
-</AccordionItem>
-</Accordion>
-</Box>
+
+
+
+
+
+
+
+
+
+
 
         </Flex>
       
@@ -846,222 +836,3 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
 }
 
 
-function AddCollat({contract, state, send, setContract, useContract, useMethod, setMethod, signer, addcollatvalue, setaddcollatvalue}) {
-      
-
-      const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
-
-      const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
-
-      
-
-      // let { state, send } = useContractFunction(contract, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
-
-
-      const labelStyles = {
-        mt: '2',
-        ml: '-2.5',
-        fontSize: 'sm',
-      }
-
-      const handleAddCollatClick = async () => {
-
-        await setMethod("increaseCollateralAmount")
-        await setContract(contractAddress)
-
-        console.log(useMethod, useContract)
-    
-        console.log("calling add loan", signer)
-        console.log("values sending", SUSD_ADDR, addcollatvalue)
-        send(SUSD_ADDR, utils.parseUnits(addcollatvalue.toString()))
-
-      }
-
-      const maxaddcollatvalue = 1000
-
-      return (
-        <Box pt={6} pb={2}>
-      
-          Add collateral :
-          <NumberInput position="absolute" width="370px" size="sm" 
-          defaultValue={15} 
-          max={maxaddcollatvalue} 
-          value={addcollatvalue ? addcollatvalue : 0} 
-          onChange={(val) => setaddcollatvalue(val)}>
-            <HStack justifyContent='space-between' spacing="20px" width="230px">
-            <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={false}>Add</Button>
-            </HStack>
-          
-          </NumberInput>
-          <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
-    
-
-              <SliderTrack>
-                <SliderFilledTrack bg='purple.400'/>
-              </SliderTrack>
-              <SliderThumb />
-            
-          </Slider>
-        </Box>
-      )
-}
-
-
-function AddLoan({contract, signer}) {
-  const [addloanvalue, setaddloanvalue] = useState(0)
-
-  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
-
-  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
-
-  
-
-  let { state, send } = useContractFunction(contract, "openLoan", { transactionName: "openLoan", signer: signer })
-
-
-  const labelStyles = {
-    mt: '2',
-    ml: '-2.5',
-    fontSize: 'sm',
-  }
-
-  const handleAddCollatClick = () => {
-
-    console.log("contract and signer", contract, signer)
-    send(SUSD_ADDR, utils.parseUnits("1"), utils.parseUnits(addloanvalue.toString()))
-
-    // utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString())
-    
-
-  }
-
-  const maxaddloanvalue = 1000
-
-  return (
-    <Box pt={6} pb={2}>
-  
-      Increase loan :
-      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
-        <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleAddCollatClick} isDisabled={false}>Add</Button>
-        </HStack>
-      
-      </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
-
-
-          <SliderTrack>
-            <SliderFilledTrack bg='purple.400'/>
-          </SliderTrack>
-          <SliderThumb />
-        
-      </Slider>
-    </Box>
-  )
-}
-
-function RemoveCollat({contract, signer}) {
-  const [removecollatvalue, setremovecollatvalue] = useState(0)
-
-  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
-
-  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
-
-  
-
-  let { state, send } = useContractFunction(contract, "closeLoan", { transactionName: "closeLoan", signer: signer })
-
-
-  const labelStyles = {
-    mt: '2',
-    ml: '-2.5',
-    fontSize: 'sm',
-  }
-
-  const handleRemoveCollatClick = () => {
-
-    console.log(contract)
-    send(SUSD_ADDR, utils.parseUnits(removecollatvalue.toString()), utils.parseUnits("1"))
-
-  }
-
-  const maxremovecollatvalue = 1000
-
-  return (
-    <Box pt={6} pb={2}>
-  
-      Remove collateral :
-      <NumberInput position="absolute" width="370px" size="sm" defaultValue={15} max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
-        <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="50px" position="absolute" colorScheme="red" variant="outline" onClick={handleRemoveCollatClick} isDisabled={false}>Remove</Button>
-        </HStack>
-      
-      </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
-
-
-          <SliderTrack>
-            <SliderFilledTrack bg='purple.400'/>
-          </SliderTrack>
-          <SliderThumb />
-        
-      </Slider>
-    </Box>
-  )
-}
-
-
-
-function RepayLoan({contract, signer}) {
-  const [repayloanvalue, setrepayloanvalue] = useState(0)
-
-  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
-
-  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
-
-  
-
-  let { state, send } = useContractFunction(contract, "closeLoan", { transactionName: "closeLoan", signer: signer })
-
-
-  const labelStyles = {
-    mt: '2',
-    ml: '-2.5',
-    fontSize: 'sm',
-  }
-
-  const handleRepayLoanClick = () => {
-
-    console.log(contract)
-    send(SUSD_ADDR, utils.parseUnits("1"), utils.parseUnits(repayloanvalue.toString()))
-
-  }
-
-  const maxrepayloanvalue = 1000
-
-  return (
-    <Box pt={6} pb={2}>
-  
-      Repay loan :
-      <NumberInput position="absolute" width="382px" size="sm" defaultValue={15} max={maxrepayloanvalue} value={repayloanvalue} onChange={(val) => setrepayloanvalue(val)}>
-        <HStack justifyContent='space-between' spacing="20px" width="230px">
-        <NumberInputField /><Button size="sm" right="80px" position="absolute" colorScheme="green" variant="outline" onClick={handleRepayLoanClick} isDisabled={false}>Repay</Button>
-        </HStack>
-      
-      </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="130px" 
-      aria-label='slider-ex-6' 
-      max={maxrepayloanvalue} 
-      value={repayloanvalue} 
-      onChange={(val) => setrepayloanvalue(val)}>
-
-
-          <SliderTrack>
-            <SliderFilledTrack bg='purple.400'/>
-          </SliderTrack>
-          <SliderThumb />
-        
-      </Slider>
-    </Box>
-  )
-}
