@@ -50,7 +50,7 @@ export const ManagePositions = ({ADDR, useColorModeValue, contract_signer, signe
 
 
 <Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-<Accordion justifyContent="center" w="120vh" defaultIndex={[0]} allowMultiple>
+<Accordion justifyContent="center" w="120vh" allowMultiple>
 <AccordionItem rounded='lg'>
   <h2>
     <AccordionButton>

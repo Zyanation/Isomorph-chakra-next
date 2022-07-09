@@ -409,6 +409,12 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
   useEffect(() => {
 
+    if(!signer){
+      handleGetSigner()
+    }
+
+    
+
  
     // if there's no value of collateral posted yet
     if(account && contract_provider){
@@ -674,7 +680,7 @@ function someFunc () {
                   </Box>
 
 
-                  {useContract && setContract && signer ? 
+                  {signer ? 
                   
                                           /* Manage loan position!! */
 
@@ -682,15 +688,9 @@ function someFunc () {
                                           ADDR={SUSD_ADDR}
                                           useColorModeValue={useColorModeValue}
                                           contract_signer={contract_signer}
-                                          useContract={useContract}
-                                          setContract={setContract}
-                                          setMethod={setMethod}
-                                          state={state}
-                                          send={send}
                                           signer={signer} 
                                           addcollatvalue={addcollatvalue} 
                                           setaddcollatvalue={setaddcollatvalue}
-                                          useContractFunction={useContractFunction}
                                           
                                           
                                           />
@@ -699,7 +699,7 @@ function someFunc () {
 
                                           <>
                                           <Box borderTop="0px" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
-                                          <Accordion justifyContent="center" w="120vh" defaultIndex={[0]} allowMultiple>
+                                          <Accordion justifyContent="center" w="120vh">
                                           <AccordionItem rounded='lg'>
                                               <AccordionButton>
                                                 <Box pb="10px" m="10px" flex='1' textAlign='left'>
