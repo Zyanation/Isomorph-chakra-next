@@ -8,7 +8,7 @@ import util, { isObject } from 'util'
 
 import { HandleLoadDashboardValues } from '../components/HandleLoadDashboardValues'
 import { PersonalPositions } from '../components/PersonalPositions'
-import { ManagePositions } from '../components/ManagePositions'
+import { ManagePositions, EmptyManagePositions } from '../components/ManagePositions'
 
 import mousd_abi from '../components/mousd_abi.json'
 
@@ -107,7 +107,7 @@ const Dashboard = ({...pageProps}) => {
   
   const { account, chainId } = useEthers()
   const [signer, setSigner] = useState(null);
-  const [addcollatvalue, setaddcollatvalue] = useState(0)
+
   // const etherBalance = useEtherBalance(account)
 
   const handleGetSigner = async () => {
@@ -176,6 +176,12 @@ const Dashboard = ({...pageProps}) => {
 
   const [ SUSDPostedDisplay, setSUSDPostedDisplay ] = useState('')
   const [ SUSDLoanDisplay, setSUSDLoanDisplay ] = useState('')
+
+  const [ EthPostedDisplay, setEthPostedDisplay ] = useState('')
+  const [ EthLoanDisplay, setEthLoanDisplay ] = useState('')
+
+  const [ LyraLPPostedDisplay, setLyraLPPostedDisplay ] = useState('')
+  const [ LyraLPLoanDisplay, setLyraLPLoanDisplay ] = useState('')
 
 
   
@@ -346,13 +352,13 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
     
     await setMethod("openLoan")
-    await setContract(contract)
+    await setContract(contract_provider)
 
     // console.log("sdsd", typeof(utils.parseUnits(sliderValue.toString())), typeof(utils.parseUnits(loanval)))
     // console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
     console.log(signer, "confirm loan")
-    send(SUSD_ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
+    send(ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
 
 
@@ -419,6 +425,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     // if there's no value of collateral posted yet
     if(account && contract_provider){
       HandleLoadDashboardValues(account, contract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, SUSD_ADDR)
+      // HandleLoadDashboardValues(account, contract_provider, setEthLoanDisplay, setEthPostedDisplay, SUSD_ADDR)
+      HandleLoadDashboardValues(account, contract_provider, setLyraLPLoanDisplay, setLyraLPPostedDisplay, LYRA_ADDR)
     }
     
 
@@ -635,7 +643,7 @@ function someFunc () {
                     onClick={
                       someFunc
                     } isLoading={isLoading}
-                    isDisabled={signer && chainId == 42 && account && selectedCollatName == "susd" ? false : true}>Confirm</Button>
+                    isDisabled={signer && chainId == 42 && account && selectedCollatName == "susd" || selectedCollatName == "lyralp" ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -672,6 +680,7 @@ function someFunc () {
                 _LoanDisplay={SUSDLoanDisplay}
                 _PostedDisplay={SUSDPostedDisplay}
                 ethersToNum={ethersToNum}
+                CollatName="sUSD"
                 />
 
 
@@ -680,17 +689,18 @@ function someFunc () {
                   </Box>
 
 
+
+
+                  {/* Manage loan position!! */}
                   {signer ? 
                   
-                                          /* Manage loan position!! */
+                                          
 
                                           <ManagePositions 
                                           ADDR={SUSD_ADDR}
                                           UIcolor={UIcolor}
                                           contract_signer={contract_signer}
                                           signer={signer} 
-                                          addcollatvalue={addcollatvalue} 
-                                          setaddcollatvalue={setaddcollatvalue}
                                           
                                           
                                           />
@@ -698,24 +708,67 @@ function someFunc () {
                                           :
 
                                           <>
-                                          <Box borderTop="0px" rounded='lg' bgColor={UIcolor}>
-                                          <Accordion justifyContent="center" w="120vh">
-                                          <AccordionItem rounded='lg'>
-                                              <AccordionButton>
-                                                <Box pb="10px" m="10px" flex='1' textAlign='left'>
-                                                  <Heading size="sm" mt="5px">Manage loan</Heading>
-                                                  
-                                                </Box>
-                                                <AccordionIcon />
-                                              </AccordionButton>
-                                              </AccordionItem>
-                                          </Accordion>
-                                          </Box>
-                                          
+        
+
+                                          <EmptyManagePositions 
+                                          UIcolor={UIcolor}
+                                          />
                                           
                                           </>
                 
                 }
+
+                  {/* Lyra's part position management*/}
+
+                {LyraLPLoanDisplay != '0' && signer ? 
+                <>
+
+          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <TableContainer rounded='lg' mt={5} w="120vh">
+            <Table variant='simple' colorScheme='facebook' size="md" pos="static">
+  
+
+                                  <PersonalPositions 
+                                  account={account}
+                                  _LoanDisplay={LyraLPLoanDisplay}
+                                  _PostedDisplay={LyraLPPostedDisplay}
+                                  ethersToNum={ethersToNum}
+                                  CollatName="LyraLP"
+                                  />
+
+
+                  </Table>
+                  </TableContainer>
+                  </Box>
+               
+                </> 
+                : 
+                <> 
+
+                {/* //This should contain nothing */}
+                </>}
+
+
+                      {/* Manage loan position for lyra!! */}
+                      {LyraLPLoanDisplay != '0' && signer ? 
+                  
+                                          
+
+                  <ManagePositions 
+                  ADDR={LYRA_ADDR}
+                  UIcolor={UIcolor}
+                  contract_signer={contract_signer}
+                  signer={signer} 
+                  
+                  
+                  />
+
+                  :
+
+                  <>    
+                  </>
+
+}
 
 
 

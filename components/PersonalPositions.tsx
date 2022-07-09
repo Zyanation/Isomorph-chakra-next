@@ -14,7 +14,7 @@ import {
     StatNumber
   } from '@chakra-ui/react'
 
-export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, ethersToNum}) => {
+export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, ethersToNum, CollatName}) => {
   return (
     <div>
 
@@ -32,13 +32,13 @@ export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, ethers
                 <Tbody>
                   <Tr height="100px">
 
-                    {!account || !_LoanDisplay ? 
+                    {!account || _LoanDisplay == '0'? 
                       <Box position="relative" alignSelf="center" left="350px" top="50px">No open positions</Box>
                   :
                     <>
                     <Td><StatNumber>{_LoanDisplay && ethersToNum(_LoanDisplay)} MOUSD</StatNumber></Td>
                     <Td><StatNumber>$ {_LoanDisplay && ethersToNum(_LoanDisplay)}</StatNumber></Td>
-                    <Td><Text><StatNumber>{_PostedDisplay && ethersToNum(_PostedDisplay)} sUSD</StatNumber></Text></Td>
+                    <Td><Text><StatNumber>{_PostedDisplay && ethersToNum(_PostedDisplay)} {CollatName}</StatNumber></Text></Td>
                     <Td isNumeric>{_PostedDisplay && ethersToNum(_PostedDisplay)}</Td>
                     <Td isNumeric>{_PostedDisplay && parseInt(ethersToNum(_PostedDisplay)/ethersToNum(_LoanDisplay)*(ethersToNum(_LoanDisplay))*0.7).toFixed(2) }</Td>
                     <Td>7%</Td>

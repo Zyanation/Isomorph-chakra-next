@@ -41,10 +41,10 @@ import {
     StatNumber
   } from '@chakra-ui/react'
 
-export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer, addcollatvalue, setaddcollatvalue}
+export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer}
     ) => {
 
-        
+        const [addcollatvalue, setaddcollatvalue] = useState(0)
   return (
     <div>
 
@@ -112,6 +112,30 @@ export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer, addcoll
     </div>
   )
 }
+
+
+export const EmptyManagePositions = ({UIcolor}) => {
+  return (
+    <div>
+        
+                                        <Box borderTop="0px" rounded='lg' bgColor={UIcolor}>
+                                          <Accordion justifyContent="center" w="120vh">
+                                          <AccordionItem rounded='lg'>
+                                              <AccordionButton>
+                                                <Box pb="10px" m="10px" flex='1' textAlign='left'>
+                                                  <Heading size="sm" mt="5px">Manage loan</Heading>
+                                                  
+                                                </Box>
+                                                <AccordionIcon />
+                                              </AccordionButton>
+                                              </AccordionItem>
+                                          </Accordion>
+                                          </Box>
+    </div>
+  )
+}
+
+export default ManagePositions
 
 
 
