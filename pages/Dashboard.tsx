@@ -724,7 +724,7 @@ function someFunc () {
                 {LyraLPLoanDisplay != '0' && signer ? 
                 <>
 
-          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <Box mt="3vh" rounded='lg' bgColor={UIcolor}>
           <TableContainer rounded='lg' mt={5} w="120vh">
             <Table variant='simple' colorScheme='facebook' size="md" pos="static">
   
@@ -774,7 +774,7 @@ function someFunc () {
 {LyraLPLoanDisplay != '0' && signer ? 
                 <>
 
-          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <Box mt="3vh" rounded='lg' bgColor={UIcolor}>
           <TableContainer rounded='lg' mt={5} w="120vh">
             <Table variant='simple' colorScheme='facebook' size="md" pos="static">
   
