@@ -197,7 +197,6 @@ const Dashboard = ({...pageProps}) => {
     const _val = await contract_provider.collateralPosted(SUSD_ADDR, account)
     setcollateralPosted(_val)
   
-    console.log(collateralPosted)
   }
 
  
@@ -264,7 +263,8 @@ const Dashboard = ({...pageProps}) => {
     if (!account) return
 
 
-    if (SelectedCollatFromInput != undefined) {
+    //if there isn't yet a valid selected collat input, and if a contract address exists
+    if (SelectedCollatFromInput != undefined && ADDR) {
 
       const _handlecollatforminput = async () => {
         setisLoading(true)
@@ -661,6 +661,7 @@ function someFunc () {
         minH="80vh"
         mx="auto"
         mt="5vh"
+        mb="5vh"
         px={4}
         overflowX="auto"
         >
@@ -718,7 +719,7 @@ function someFunc () {
                 
                 }
 
-                  {/* Lyra's part position management*/}
+                  {/* Lyra's part dashboard*/}
 
                 {LyraLPLoanDisplay != '0' && signer ? 
                 <>
@@ -751,6 +752,56 @@ function someFunc () {
 
                       {/* Manage loan position for lyra!! */}
                       {LyraLPLoanDisplay != '0' && signer ? 
+                  
+                                          
+
+                  <ManagePositions 
+                  ADDR={LYRA_ADDR}
+                  UIcolor={UIcolor}
+                  contract_signer={contract_signer}
+                  signer={signer} 
+                  
+                  
+                  />
+
+                  :
+
+                  <>    
+                  </>
+
+}
+
+{LyraLPLoanDisplay != '0' && signer ? 
+                <>
+
+          <Box mt="3vh" rounded='lg' bgColor={useColorModeValue('gray.100', 'blackAlpha.700')}>
+          <TableContainer rounded='lg' mt={5} w="120vh">
+            <Table variant='simple' colorScheme='facebook' size="md" pos="static">
+  
+
+                                  <PersonalPositions 
+                                  account={account}
+                                  _LoanDisplay={LyraLPLoanDisplay}
+                                  _PostedDisplay={LyraLPPostedDisplay}
+                                  ethersToNum={ethersToNum}
+                                  CollatName="Mock ETH"
+                                  />
+
+
+                  </Table>
+                  </TableContainer>
+                  </Box>
+               
+                </> 
+                : 
+                <> 
+
+                {/* //This should contain nothing */}
+                </>}
+
+
+                      {/* Manage loan position for lyra!! */}
+                      {EthLoanDisplay != '0' && signer ? 
                   
                                           
 
