@@ -13,13 +13,14 @@ import wait from 'wait'
 import theme from "../themes/index"
 import { SessionProvider } from "next-auth/react"
 import type { AppProps } from "next/app"
-import { WagmiConfig } from 'wagmi'
+import { OptimismKovan } from '../components/OptimisticKovanConfig'
+
 
 
 const config: Config = {
-  readOnlyChainId: Kovan.chainId,
+  readOnlyChainId: OptimismKovan.chainId,
   readOnlyUrls: {
-    [Kovan.chainId]: `https://kovan.infura.io/v3/${process.env.NEXT_PUBLIC_KOVAN_INFURA}`,
+    [OptimismKovan.chainId]: `https://optimism-kovan.infura.io/v3/${process.env.NEXT_PUBLIC_KOVAN_INFURA}`,
   },
   pollingInterval: 10000,
   autoConnect: false,

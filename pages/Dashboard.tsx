@@ -96,12 +96,18 @@ import { off } from 'process'
 
 const Dashboard = ({...pageProps}) => {
 
+  let gen_ABI = ["function approve(address _spender, uint256 _value) public returns (bool success)", "function allowance(address owner, address spender)"]
+  let price_ABI = ["function priceCollateralToUSD(bytes32, uint256, uint256) public view returns (uint256)"];
+
   const toast = useToast()
-  const MOUSD_ADDR = '0x015e9974A55220FEdEe0EFd1baD663802623302C'
-  const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
+  const MOUSD_ADDR = '0x2a622f65D4468d03Cb0b28Ff19BbE4C68C704f0a' //new
+  const SUSD_ADDR = '0xaA5068dC2B3AADE533d3e52C6eeaadC6a8154c57'  //new
   const LYRA_ADDR = '0xf4f4Bb8D73A5eB5a8586E77dDb334C16AB30ff6A'
 
-  const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
+
+  const collatbookAddress = '0x81a024d18Ab348065FC075e5B941E8dCdae7c016' //not implemented
+  const contractAddress = '0xD4e9503C91E2D426c8a95CF966DA3f8F31fBcb93'
+  const treasuryAddress = '0x10cb54E115aa6D05dB87299b6f0E49224Cac7963' //not implemented
 
   const mousdInterface = new utils.Interface(mousd_abi)
   
@@ -116,7 +122,7 @@ const Dashboard = ({...pageProps}) => {
       let tempProvider = new ethers.providers.Web3Provider(window.ethereum)
       const newsigner = tempProvider.getSigner()
       setSigner(newsigner)
-      await wait(2000)
+
       console.log("signer", signer)
     } catch (err) {
       console.log(err)
@@ -148,8 +154,9 @@ const Dashboard = ({...pageProps}) => {
 
   // const contract = new Contract(contractAddress, mousdInterface)
 
-  const provider = new ethers.providers.InfuraProvider("kovan", process.env.NEXT_PUBLIC_KOVAN_INFURA);
+  const provider = new ethers.providers.InfuraProvider("optimism-kovan", process.env.NEXT_PUBLIC_KOVAN_INFURA);
   const contract_provider = new ethers.Contract(contractAddress, mousd_abi, provider);
+  const contract_provider_withprice = new ethers.Contract(contractAddress, price_ABI, provider);
   const contract_signer = new ethers.Contract(contractAddress, mousd_abi, signer);
 
   //the usedapp way
@@ -176,27 +183,37 @@ const Dashboard = ({...pageProps}) => {
 
   const [ SUSDPostedDisplay, setSUSDPostedDisplay ] = useState('')
   const [ SUSDLoanDisplay, setSUSDLoanDisplay ] = useState('')
+  const [ SUSDValueDisplay, setSUSDValueDisplay ] = useState('')
 
   const [ EthPostedDisplay, setEthPostedDisplay ] = useState('')
   const [ EthLoanDisplay, setEthLoanDisplay ] = useState('')
+  const [ EthValueDisplay, setEthValueDisplay ] = useState('')
 
   const [ LyraLPPostedDisplay, setLyraLPPostedDisplay ] = useState('')
   const [ LyraLPLoanDisplay, setLyraLPLoanDisplay ] = useState('')
+  const [ LyraValueDisplay, setLyraValueDisplay ] = useState('')
 
 
   
 
   const getLoanvalue = async () => {
-    const loanval = await contract_provider.moUSDLoaned(SUSD_ADDR, account)
+    const loanval = await contract_provider.moUSDLoaned(ADDR, account)
     setloanval(loanval)
   
     console.log("got loanval", utils.formatEther(loanval))
   }
 
   const getCollatvalue = async () => {
-    const _val = await contract_provider.collateralPosted(SUSD_ADDR, account)
+    const _val = await contract_provider.collateralPosted(ADDR, account)
     setcollateralPosted(_val)
   
+  }
+
+  const SYNTH = "0";
+  const LYRA = "1";
+
+  const getCollatprice = async () => {
+    const _price = await contract_provider.priceCollateralToUSD(ADDR, collateralPosted, SYNTH)
   }
 
  
@@ -314,8 +331,6 @@ const Dashboard = ({...pageProps}) => {
 
 
 
-  let gen_ABI = ["function approve(address _spender, uint256 _value) public returns (bool success)", "function allowance(address owner, address spender)"]
-
 
 
   let contract = new ethers.Contract(SUSD_ADDR, gen_ABI, signer);
@@ -423,10 +438,15 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
  
     // if there's no value of collateral posted yet
-    if(account && contract_provider){
-      HandleLoadDashboardValues(account, contract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, SUSD_ADDR)
+    if(account && contract_provider && contract_provider_withprice){
+
+      console.log("contract_provider_withprice", contract_provider_withprice)
+      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, SUSD_ADDR)
+
       // HandleLoadDashboardValues(account, contract_provider, setEthLoanDisplay, setEthPostedDisplay, SUSD_ADDR)
-      HandleLoadDashboardValues(account, contract_provider, setLyraLPLoanDisplay, setLyraLPPostedDisplay, LYRA_ADDR)
+      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, setLyraLPLoanDisplay, setLyraLPPostedDisplay, setLyraValueDisplay, LYRA_ADDR)
+
+
     }
     
 
@@ -480,12 +500,12 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
   useEffect(() => {
 
-    if(chainId != 42)
+    if(chainId != 69)
     {
       toast({
         position: 'top',
         title: 'Wrong network',
-        description: "Please switch to Kovan test net",
+        description: "Please switch to Optimistic Kovan",
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -591,7 +611,7 @@ function someFunc () {
                   <option value='eth'>Ethereum</option>
                   <option value='lyralp'>Lyra LP tokens</option>
                   </Select>
-                  { selectedCollatName=="susd" || selectedCollatName=="lyralp" && chainId == 42 && account ?
+                  { selectedCollatName=="susd" || selectedCollatName=="lyralp" && chainId == 69 && account ?
                   <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handleapprove}>Approve</Button>
                   :
                   <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handleapprove}>Approve</Button>
@@ -643,7 +663,7 @@ function someFunc () {
                     onClick={
                       someFunc
                     } isLoading={isLoading}
-                    isDisabled={signer && chainId == 42 && account && selectedCollatName == "susd" || selectedCollatName == "lyralp" ? false : true}>Confirm</Button>
+                    isDisabled={signer && chainId == 69 && account && selectedCollatName == "susd" || selectedCollatName == "lyralp" ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -680,6 +700,7 @@ function someFunc () {
                 account={account}
                 _LoanDisplay={SUSDLoanDisplay}
                 _PostedDisplay={SUSDPostedDisplay}
+                _CollatPriceDisplay={SUSDValueDisplay}
                 ethersToNum={ethersToNum}
                 CollatName="sUSD"
                 />
@@ -733,6 +754,7 @@ function someFunc () {
                                   account={account}
                                   _LoanDisplay={LyraLPLoanDisplay}
                                   _PostedDisplay={LyraLPPostedDisplay}
+                                  _CollatPriceDisplay={LyraValueDisplay}
                                   ethersToNum={ethersToNum}
                                   CollatName="LyraLP"
                                   />
@@ -783,6 +805,7 @@ function someFunc () {
                                   account={account}
                                   _LoanDisplay={LyraLPLoanDisplay}
                                   _PostedDisplay={LyraLPPostedDisplay}
+                                  _CollatPriceDisplay={EthValueDisplay}
                                   ethersToNum={ethersToNum}
                                   CollatName="Mock ETH"
                                   />

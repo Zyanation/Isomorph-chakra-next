@@ -135,12 +135,12 @@ export default function WithSubnavigation() {
           <Button
             color={useColorModeValue('gray.800', 'white.500')}
             as={'a'}
-            bgColor={chainId == 42 ? "teal" : "red.700"}
+            bgColor={chainId == 69 ? "teal" : "red.700"}
             fontSize={'sm'}
             fontWeight={"bold"}
             variant={'solid'}
             >
-            {chainId == 42 ? <><CheckIcon w={5} h={5} mr="5px" color="green.800" /><Text size="sm">Network : <b>Kovan</b></Text></> 
+            {chainId == 69 ? <><CheckIcon w={5} h={5} mr="5px" color="green.800" /><Text size="sm">Network : <b>Optimistic Kovan</b></Text></> 
             :
 
             <><WarningTwoIcon w={5} h={5} mr="5px" color="yellow.300" /><Text size="sm">Network : <b>{ChainId[chainId]}</b></Text></> 
