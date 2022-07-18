@@ -5,6 +5,7 @@ import { utils, ethers, Signer, BigNumber } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 import wait from 'wait'
 import util, { isObject } from 'util'
+import CollatList from "../components/CollatList.json"
 
 import { HandleLoadDashboardValues } from '../components/HandleLoadDashboardValues'
 import { PersonalPositions } from '../components/PersonalPositions'
@@ -98,6 +99,7 @@ const Dashboard = ({...pageProps}) => {
 
   let gen_ABI = ["function approve(address _spender, uint256 _value) public returns (bool success)", "function allowance(address owner, address spender)"]
   let price_ABI = ["function priceCollateralToUSD(bytes32, uint256, uint256) public view returns (uint256)"];
+  let SNXprice_ABI = ["function effectiveValue(bytes32, uint256, bytes32) public view returns (uint256)"];
 
   const toast = useToast()
   const MOUSD_ADDR = '0x2a622f65D4468d03Cb0b28Ff19BbE4C68C704f0a' //new
@@ -108,6 +110,8 @@ const Dashboard = ({...pageProps}) => {
   const collatbookAddress = '0x81a024d18Ab348065FC075e5B941E8dCdae7c016' //not implemented
   const contractAddress = '0xD4e9503C91E2D426c8a95CF966DA3f8F31fBcb93'
   const treasuryAddress = '0x10cb54E115aa6D05dB87299b6f0E49224Cac7963' //not implemented
+
+  const SNXpriceAddress = "0x37488De9A5Eaf311840D4B21a5B35A16bcb69603";
 
   const mousdInterface = new utils.Interface(mousd_abi)
   
@@ -156,7 +160,11 @@ const Dashboard = ({...pageProps}) => {
 
   const provider = new ethers.providers.InfuraProvider("optimism-kovan", process.env.NEXT_PUBLIC_KOVAN_INFURA);
   const contract_provider = new ethers.Contract(contractAddress, mousd_abi, provider);
+
+
   const contract_provider_withprice = new ethers.Contract(contractAddress, price_ABI, provider);
+  const snxcontract_provider = new ethers.Contract(SNXpriceAddress, SNXprice_ABI, provider);
+
   const contract_signer = new ethers.Contract(contractAddress, mousd_abi, signer);
 
   //the usedapp way
@@ -224,52 +232,37 @@ const Dashboard = ({...pageProps}) => {
 
   const getWalletCollatBalance = async (_SelectedCollatFromInput) => {
 
+    const collatSelected = CollatList[`${_SelectedCollatFromInput}`]
 
+    if(!collatSelected) {
 
+      setSelectedCollatFromInput("")
 
-    switch(_SelectedCollatFromInput) {
-      case "susd":
-        console.log("susded")
-        setisLoading(true)
-        
-        await setADDR(SUSD_ADDR)
-        await setSelectedCollatFromInput("susd")
-        break;
-      case "eth":
-        await setADDR(undefined)
-        await setSelectedCollatFromInput("")
+      toast({
+        position: 'bottom',
+        title: 'Coming soon',
+        description: `Sorry, but we currently do not support ${_SelectedCollatFromInput} yet :(`,
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      })
+      return;
 
-        console.log("ethed")
-
-        toast({
-          position: 'bottom',
-          title: 'Coming soon',
-          description: "Sorry, but we currently do not support Ethereum yet :(",
-          status: 'warning',
-          duration: 4000,
-          isClosable: true,
-        })
-        break;
-      case "lyralp":
-        await setisLoading(true)
-        await setADDR(LYRA_ADDR)
-        await setSelectedCollatFromInput("lyralp")
-
-        console.log("lyralped")
-
-        // toast({
-        //   position: 'bottom',
-        //   title: 'Coming soon',
-        //   description: "Sorry, but we currently do not support Lyra LP tokens yet :(",
-        //   status: 'warning',
-        //   duration: 4000,
-        //   isClosable: true,
-        // })
-        // break;
     }
 
+    const changeCollateral = async (_name, _address) => {
+
+      console.log(_name)
+
+      setisLoading(true)
+      setADDR(_address)
+      setSelectedCollatFromInput(_name)
+
+    }
+
+    changeCollateral(collatSelected.name, collatSelected.address);
+
    
-    
   }
 
 
@@ -325,6 +318,8 @@ const Dashboard = ({...pageProps}) => {
 
     }
 
+    console.log("LyraLPLoanDisplay", LyraLPLoanDisplay)
+
 
 
   }, [SelectedCollatFromInput])
@@ -333,7 +328,7 @@ const Dashboard = ({...pageProps}) => {
 
 
 
-  let contract = new ethers.Contract(SUSD_ADDR, gen_ABI, signer);
+  let contract = new ethers.Contract(CollatList.susd.address, gen_ABI, signer);
 
   const [useContract, setContract] = useState()
   const [useMethod, setMethod] = useState("")
@@ -377,21 +372,18 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
 
 
-
-
-
-
  
 
   }
   
   const [selectedCollatName, setselectedCollatName ] = useState("")
 
-// Position management, will update everytime a new collateral is selected.
+// Left dashboard / Position management, will update everytime a new collateral is selected,
+// account detected, or when signer is obtained.
 
   useEffect(()=>{
     
-    if(!account) return
+    if(!account || !selectedCollatName) return
 
 
 
@@ -403,8 +395,11 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
       }
     
     
-      if ((selectedCollatName == "susd" || selectedCollatName == "lyralp") && collatBalance) {
+      if (collatBalance == null) {
         setisLoading(true)
+      }
+
+      if(collatBalance) {
         setSelectedCollatReadableBalance(utils.formatUnits(collatBalance))
       }
       
@@ -419,7 +414,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
    
 
   
-  }, [selectedCollatName])
+  }, [selectedCollatName, account, signer])
 
 
 
@@ -441,10 +436,10 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     if(account && contract_provider && contract_provider_withprice){
 
       console.log("contract_provider_withprice", contract_provider_withprice)
-      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, SUSD_ADDR)
+      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, CollatList.susd.address)
 
-      // HandleLoadDashboardValues(account, contract_provider, setEthLoanDisplay, setEthPostedDisplay, SUSD_ADDR)
-      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, setLyraLPLoanDisplay, setLyraLPPostedDisplay, setLyraValueDisplay, LYRA_ADDR)
+      // HandleLoadDashboardValues(account, contract_provider, setEthLoanDisplay, setEthPostedDisplay, CollatList.susd.address)
+      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, setLyraLPLoanDisplay, setLyraLPPostedDisplay, setLyraValueDisplay, LYRA_ADDR)
 
 
     }
@@ -607,11 +602,28 @@ function someFunc () {
                     console.warn('onChange TextInput value: ' + e.target.value);
                     getWalletCollatBalance(e.target.value)
                   }}>
-                  <option value='susd'>sUSD</option>
-                  <option value='eth'>Ethereum</option>
-                  <option value='lyralp'>Lyra LP tokens</option>
+
+
+                  {Object.entries(CollatList).map(([key, value]) => {
+                    return (
+                    <>
+                    <option value={value.name}>
+                      {value.fullname}
+                    </option>
+
+
+                    </>
+                    )
+
+                  })}
+
+                  {/* <option value='susd'>sUSD</option>
+                  <option value='seth'>Ethereum</option>
+                  <option value='lyralp'>Lyra LP tokens</option> */}
+
+                  
                   </Select>
-                  { selectedCollatName=="susd" || selectedCollatName=="lyralp" && chainId == 69 && account ?
+                  { SelectedCollatFromInput && account ?
                   <Button alignSelf="center" colorScheme="green" isLoading={isLoading || signer ? isLoading : false} onClick={handleapprove}>Approve</Button>
                   :
                   <Button alignSelf="center" colorScheme="green" isDisabled={true} onClick={handleapprove}>Approve</Button>
@@ -719,7 +731,7 @@ function someFunc () {
                                           
 
                                           <ManagePositions 
-                                          ADDR={SUSD_ADDR}
+                                          ADDR={CollatList.susd.address}
                                           UIcolor={UIcolor}
                                           contract_signer={contract_signer}
                                           signer={signer} 
@@ -824,7 +836,7 @@ function someFunc () {
 
 
                       {/* Manage loan position for lyra!! */}
-                      {EthLoanDisplay != '0' && signer ? 
+                      {EthLoanDisplay != '0' && false && signer ? 
                   
                                           
 

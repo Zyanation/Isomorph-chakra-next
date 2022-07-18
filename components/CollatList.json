@@ -1,0 +1,20 @@
+{
+    
+    "susd": {
+        "name": "susd",
+        "fullname": "sUSD",
+        "address": "0xaA5068dC2B3AADE533d3e52C6eeaadC6a8154c57"
+    },
+
+    "seth" : {
+        "name": "seth",
+        "fullname": "sETH",
+        "address": "0x94B41091eB29b36003aC1C6f0E55a5225633c884"
+    },
+
+    "sbtc" : {
+        "name": "sbtc",
+        "fullname": "sBTC",
+        "address": "0x23F608ACc41bd7BCC617a01a9202214EE305439a"
+    }
+}

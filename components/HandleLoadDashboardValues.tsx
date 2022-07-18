@@ -1,7 +1,7 @@
 import { utils } from 'ethers'
 
 
-export async function HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, _setLoanDisplay, _setPostedDisplay, _setCollatPriceDisplay, _ADDR) {
+export async function HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, _setLoanDisplay, _setPostedDisplay, _setCollatPriceDisplay, _ADDR) {
 
 
   const sUSDCode = utils.formatBytes32String("sUSD");
@@ -10,25 +10,27 @@ export async function HandleLoadDashboardValues(account, contract_provider, cont
 
     //these return promises!
   
+    console.log("before loanval", contract_provider, _ADDR, account)
     const _loanval = await contract_provider.moUSDLoaned(_ADDR, account)
+    // const _loanval =  utils.parseEther("1111111")
+    // const _collatval = utils.parseEther("11222211111")
     const _collatval = await contract_provider.collateralPosted(_ADDR, account)
 
     const SYNTH = 0;
     const LYRA = 1;
 
-    let bytes32;
     // if(_ADDR == "0xaA5068dC2B3AADE533d3e52C6eeaadC6a8154c57") {
     //   bytes32 = sUSDCode;
     // }
 
-    console.log("what about here", sUSDCode, _collatval)
-    const _price = await contract_provider_withprice.priceCollateralToUSD(sETHCode, utils.parseEther('1'), SYNTH)
+    console.log("what about here", _loanval, _collatval)
+    // const _price = await contract_provider_withprice.priceCollateralToUSD(sETHCode, utils.parseEther('1'), SYNTH)
+    const _price = await snxcontract_provider.effectiveValue(sUSDCode, utils.parseEther("100000000"), sETHCode)
 
-    console.log(contract_provider, _ADDR, account)
 
     console.log("I hope this works _price", _price)
 
-    _setLoanDisplay(_loanval)
-    _setPostedDisplay(_collatval)
+    _setLoanDisplay(_loanval.mul(10000))
+    _setPostedDisplay(_collatval.mul(10000))
     _setCollatPriceDisplay(_price)
   }
