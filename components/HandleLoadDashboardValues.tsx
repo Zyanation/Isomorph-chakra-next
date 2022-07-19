@@ -25,12 +25,12 @@ export async function HandleLoadDashboardValues(account, contract_provider, cont
 
     console.log("what about here", _loanval, _collatval)
     // const _price = await contract_provider_withprice.priceCollateralToUSD(sETHCode, utils.parseEther('1'), SYNTH)
-    const _price = await snxcontract_provider.effectiveValue(sUSDCode, utils.parseEther("100000000"), sETHCode)
+    const _price = await snxcontract_provider.effectiveValue(sUSDCode, _collatval, sETHCode)
 
 
     console.log("I hope this works _price", _price)
 
-    _setLoanDisplay(_loanval.mul(10000))
-    _setPostedDisplay(_collatval.mul(10000))
-    _setCollatPriceDisplay(_price)
+    _setLoanDisplay(_loanval.mul(100000))
+    _setPostedDisplay(_collatval.mul(100000))
+    _setCollatPriceDisplay(_price.mul(100000))
   }

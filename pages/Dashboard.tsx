@@ -435,6 +435,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     // if there's no value of collateral posted yet
     if(account && contract_provider && contract_provider_withprice){
 
+      //set up a for loop here that loops through collat list
+
       console.log("contract_provider_withprice", contract_provider_withprice)
       HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, CollatList.susd.address)
 
