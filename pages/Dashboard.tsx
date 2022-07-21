@@ -13,7 +13,7 @@ import { ManagePositions, EmptyManagePositions } from '../components/ManagePosit
 
 import mousd_abi from '../components/mousd_abi.json'
 
-import { useToast } from '@chakra-ui/react'
+import { cookieStorageManager, useToast } from '@chakra-ui/react'
 
 import {
   Stat,
@@ -120,6 +120,29 @@ const Dashboard = ({...pageProps}) => {
 
   // const etherBalance = useEtherBalance(account)
 
+  
+  let defaultPositionState = {};
+
+  // setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, CollatList.susd.address
+  Object.entries(CollatList).map(([key, value]) => {
+
+     defaultPositionState[key] = { 
+      name: value.name,
+      fullname: value.fullname,
+      address: value.address,
+      loandisplay: '',
+      collatposteddisplay: '',
+      collatvaluedisplay: ''
+
+     }
+
+  })
+
+  const [PositionsState, setPositionsState] = useState(defaultPositionState)
+
+  // console.log(JSON.stringify(PositionsState))
+
+
   const handleGetSigner = async () => {
     try {
       console.log("huh")
@@ -193,13 +216,15 @@ const Dashboard = ({...pageProps}) => {
   const [ SUSDLoanDisplay, setSUSDLoanDisplay ] = useState('')
   const [ SUSDValueDisplay, setSUSDValueDisplay ] = useState('')
 
-  const [ EthPostedDisplay, setEthPostedDisplay ] = useState('')
-  const [ EthLoanDisplay, setEthLoanDisplay ] = useState('')
-  const [ EthValueDisplay, setEthValueDisplay ] = useState('')
+  const [ EthPostedDisplay, setEthPostedDisplay ] = useState(0)
+  const [ EthLoanDisplay, setEthLoanDisplay ] = useState(0)
+  const [ EthValueDisplay, setEthValueDisplay ] = useState(0)
 
-  const [ LyraLPPostedDisplay, setLyraLPPostedDisplay ] = useState('')
-  const [ LyraLPLoanDisplay, setLyraLPLoanDisplay ] = useState('')
-  const [ LyraValueDisplay, setLyraValueDisplay ] = useState('')
+  const [ LyraLPPostedDisplay, setLyraLPPostedDisplay ] = useState(0)
+  const [ LyraLPLoanDisplay, setLyraLPLoanDisplay ] = useState(0)
+  const [ LyraValueDisplay, setLyraValueDisplay ] = useState(0)
+
+  const [ Render, setRender ] = useState(0)
 
 
   
@@ -233,6 +258,8 @@ const Dashboard = ({...pageProps}) => {
   const getWalletCollatBalance = async (_SelectedCollatFromInput) => {
 
     const collatSelected = CollatList[`${_SelectedCollatFromInput}`]
+
+    console.log("collattttt", collatSelected)
 
     if(!collatSelected) {
 
@@ -284,8 +311,8 @@ const Dashboard = ({...pageProps}) => {
 
         await handleGetSigner()
         setisLoading(true)
-        await setMethod("approve")
-        await setContract(temp_contract)
+        setMethod("approve")
+        setContract(temp_contract)
 
 
         //set collateral states
@@ -318,7 +345,7 @@ const Dashboard = ({...pageProps}) => {
 
     }
 
-    console.log("LyraLPLoanDisplay", LyraLPLoanDisplay)
+
 
 
 
@@ -360,6 +387,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     console.log(loanslidervalue, typeof(loanslidervalue))
 
     console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
+
+    
     
     await setMethod("openLoan")
     await setContract(contract_provider)
@@ -370,6 +399,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     console.log(signer, "confirm loan")
     send(ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
+    setRender(!Render);
 
 
  
@@ -411,6 +441,9 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
 
     
+
+
+    
    
 
   
@@ -433,22 +466,33 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
  
     // if there's no value of collateral posted yet
-    if(account && contract_provider && contract_provider_withprice){
+    if(account && contract_provider && contract_provider_withprice && PositionsState) {
 
       //set up a for loop here that loops through collat list
 
-      console.log("contract_provider_withprice", contract_provider_withprice)
-      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, setSUSDLoanDisplay, setSUSDPostedDisplay, setSUSDValueDisplay, CollatList.susd.address)
+      // name: value.name,
+      // address: value.address,
+      // loandisplay: '',
+      // collatposteddisplay: '',
+      // collatvaluedisplay: ''
 
-      // HandleLoadDashboardValues(account, contract_provider, setEthLoanDisplay, setEthPostedDisplay, CollatList.susd.address)
-      HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, setLyraLPLoanDisplay, setLyraLPPostedDisplay, setLyraValueDisplay, LYRA_ADDR)
+      Object.entries(PositionsState).map(([key, value]) => {
+        HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, PositionsState, setPositionsState, key, value)
+
+          //value
+      //   {
+      //     "name": "sbtc",
+      //     "address": "0x23F608ACc41bd7BCC617a01a9202214EE305439a",
+      //     "loandisplay": "",
+      //     "collatposteddisplay": "",
+      //     "collatvaluedisplay": ""
+      // }
+      }) }
+
+      
 
 
-    }
-    
-
-
-  }, [account, state])
+  }, [account, state, Render])
 
 
   
@@ -549,10 +593,6 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 //     return value?.[0]
 //  }
 
-function someFunc () {
-  console.log()
-  handleOpenloanclick()
-}
 
   
 
@@ -675,9 +715,9 @@ function someFunc () {
                     <Button colorScheme="red">Cancel</Button>
                     <Button colorScheme="green" 
                     onClick={
-                      someFunc
+                      handleOpenloanclick
                     } isLoading={isLoading}
-                    isDisabled={signer && chainId == 69 && account && selectedCollatName == "susd" || selectedCollatName == "lyralp" ? false : true}>Confirm</Button>
+                    isDisabled={signer && chainId == 69 && account && selectedCollatName ? false : true}>Confirm</Button>
               </HStack>
             </Box>
 
@@ -712,9 +752,9 @@ function someFunc () {
 
                 <PersonalPositions 
                 account={account}
-                _LoanDisplay={SUSDLoanDisplay}
-                _PostedDisplay={SUSDPostedDisplay}
-                _CollatPriceDisplay={SUSDValueDisplay}
+                _LoanDisplay={PositionsState['susd'].loandisplay}
+                _PostedDisplay={PositionsState['susd'].collatposteddisplay}
+                _CollatPriceDisplay={PositionsState['susd'].collatvaluedisplay}
                 ethersToNum={ethersToNum}
                 CollatName="sUSD"
                 />
@@ -733,7 +773,7 @@ function someFunc () {
                                           
 
                                           <ManagePositions 
-                                          ADDR={CollatList.susd.address}
+                                          ADDR={PositionsState['susd'].address}
                                           UIcolor={UIcolor}
                                           contract_signer={contract_signer}
                                           signer={signer} 
@@ -756,7 +796,7 @@ function someFunc () {
 
                   {/* Lyra's part dashboard*/}
 
-                {LyraLPLoanDisplay != '0' && signer ? 
+                {PositionsState['seth'].collatposteddisplay != '0' && signer ? 
                 <>
 
           <Box mt="3vh" rounded='lg' bgColor={UIcolor}>
@@ -766,11 +806,11 @@ function someFunc () {
 
                                   <PersonalPositions 
                                   account={account}
-                                  _LoanDisplay={LyraLPLoanDisplay}
-                                  _PostedDisplay={LyraLPPostedDisplay}
-                                  _CollatPriceDisplay={LyraValueDisplay}
+                                  _LoanDisplay={PositionsState['seth'].loandisplay }
+                                  _PostedDisplay={PositionsState['seth'].collatposteddisplay }
+                                  _CollatPriceDisplay={PositionsState['seth'].collatvaluedisplay}
                                   ethersToNum={ethersToNum}
-                                  CollatName="LyraLP"
+                                  CollatName={PositionsState['seth'].fullname}
                                   />
 
 

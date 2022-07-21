@@ -16,7 +16,6 @@ import {
 
 export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _CollatPriceDisplay, ethersToNum, CollatName}) => {
 
-  console.log("Collatpricedisplay", _CollatPriceDisplay)
 
   return (
     <div>
