@@ -132,7 +132,9 @@ const Dashboard = ({...pageProps}) => {
       address: value.address,
       loandisplay: '',
       collatposteddisplay: '',
-      collatvaluedisplay: ''
+      collatvaluedisplay: '',
+      interest: '',
+      minOpeningMargin: ''
 
      }
 
@@ -150,7 +152,6 @@ const Dashboard = ({...pageProps}) => {
       const newsigner = tempProvider.getSigner()
       setSigner(newsigner)
 
-      console.log("signer", signer)
     } catch (err) {
       console.log(err)
     }
@@ -224,7 +225,12 @@ const Dashboard = ({...pageProps}) => {
   const [ LyraLPLoanDisplay, setLyraLPLoanDisplay ] = useState(0)
   const [ LyraValueDisplay, setLyraValueDisplay ] = useState(0)
 
-  const [ Render, setRender ] = useState(0)
+  const [ Render, setRender ] = useState(false)
+
+  const forceRender = () => {
+    console.log("forcing the render init")
+    setRender(!Render)
+  }
 
 
   
@@ -367,10 +373,6 @@ const Dashboard = ({...pageProps}) => {
    
 
       send(contractAddress, "1000000000000000000000000000000000000000")
-
-
-   
-    
   
 }
 
@@ -396,15 +398,22 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
     // console.log("sdsd", typeof(utils.parseUnits(sliderValue.toString())), typeof(utils.parseUnits(loanval)))
     // console.log(utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
-    console.log(signer, "confirm loan")
-    send(ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
 
-    setRender(!Render);
 
 
  
 
   }
+
+  useEffect(() => {
+    if(useMethod != "openLoan") return
+
+    console.log(signer, "confirm loan")
+    send(ADDR, utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString()))
+
+
+    
+  }, [useContract])
   
   const [selectedCollatName, setselectedCollatName ] = useState("")
 
@@ -476,8 +485,14 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
       // collatposteddisplay: '',
       // collatvaluedisplay: ''
 
+      let COUNTER = 0;
+
       Object.entries(PositionsState).map(([key, value]) => {
+        console.log(COUNTER, account, contract_provider, contract_provider_withprice, snxcontract_provider, PositionsState, setPositionsState, key, value)
+        COUNTER++
         HandleLoadDashboardValues(account, contract_provider, contract_provider_withprice, snxcontract_provider, PositionsState, setPositionsState, key, value)
+
+        
 
           //value
       //   {
@@ -488,6 +503,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
       //     "collatvaluedisplay": ""
       // }
       }) }
+
+      console.log("duin dun dun dun dun DUN DUN DUN")
 
       
 
@@ -557,7 +574,9 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
 
   function ethersToNum (_num : string) {
     if(!_num) return
-    return parseInt(utils.formatEther(_num)).toFixed(2)
+    return parseInt(utils.formatEther(_num))
+
+    //.toFixed(2)
   }
 
 
@@ -649,7 +668,9 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                   {Object.entries(CollatList).map(([key, value]) => {
                     return (
                     <>
-                    <option value={value.name}>
+                    <option 
+                      key={value.name}
+                      value={value.name}>
                       {value.fullname}
                     </option>
 
@@ -755,6 +776,8 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                 _LoanDisplay={PositionsState['susd'].loandisplay}
                 _PostedDisplay={PositionsState['susd'].collatposteddisplay}
                 _CollatPriceDisplay={PositionsState['susd'].collatvaluedisplay}
+                _Interest={PositionsState['susd'].interest}
+                _minOpeningMargin={PositionsState['susd'].minOpeningMargin}
                 ethersToNum={ethersToNum}
                 CollatName="sUSD"
                 />
@@ -777,6 +800,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                                           UIcolor={UIcolor}
                                           contract_signer={contract_signer}
                                           signer={signer} 
+                                          forceRender={forceRender}
                                           
                                           
                                           />
@@ -794,7 +818,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                 
                 }
 
-                  {/* Lyra's part dashboard*/}
+                  {/* ETH's part dashboard*/}
 
                 {PositionsState['seth'].collatposteddisplay != '0' && signer ? 
                 <>
@@ -826,16 +850,17 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                 </>}
 
 
-                      {/* Manage loan position for lyra!! */}
-                      {LyraLPLoanDisplay != '0' && signer ? 
+                      {/* Manage loan position for ETH!! */}
+                      {PositionsState['seth'].collatposteddisplay != '0' && signer ? 
                   
                                           
 
                   <ManagePositions 
-                  ADDR={LYRA_ADDR}
+                  ADDR={PositionsState['seth'].address}
                   UIcolor={UIcolor}
                   contract_signer={contract_signer}
-                  signer={signer} 
+                  signer={signer}
+                  forceRender={forceRender}
                   
                   
                   />
@@ -887,6 +912,7 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                   UIcolor={UIcolor}
                   contract_signer={contract_signer}
                   signer={signer} 
+                  forceRender={forceRender}
                   
                   
                   />

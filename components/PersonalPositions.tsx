@@ -1,4 +1,5 @@
 import React from 'react'
+import { ethers, utils } from 'ethers'
 
 import {
     Table,
@@ -14,7 +15,9 @@ import {
     StatNumber
   } from '@chakra-ui/react'
 
-export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _CollatPriceDisplay, ethersToNum, CollatName}) => {
+export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _CollatPriceDisplay, ethersToNum, CollatName, _Interest, _minOpeningMargin}) => {
+
+  const LiquidationPercentCollat = 100/((_minOpeningMargin)*100)
 
 
   return (
@@ -34,7 +37,7 @@ export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _Colla
                 <Tbody>
                   <Tr height="100px">
 
-                    {!account || _LoanDisplay == '0' || _CollatPriceDisplay == '0' ? 
+                    {!account || _LoanDisplay == '0' || _CollatPriceDisplay == '0' || !_Interest ? 
                       <Box position="relative" alignSelf="center" left="350px" top="50px">No open positions</Box>
                   :
                     <>
@@ -42,8 +45,8 @@ export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _Colla
                     <Td><StatNumber>$ {_LoanDisplay && ethersToNum(_LoanDisplay)}</StatNumber></Td>
                     <Td><Text><StatNumber>{_PostedDisplay && ethersToNum(_PostedDisplay)} {CollatName}</StatNumber></Text></Td>
                     <Td isNumeric>{_CollatPriceDisplay && ethersToNum(_CollatPriceDisplay)}</Td>
-                    <Td isNumeric>{_PostedDisplay && parseInt(ethersToNum(_PostedDisplay)/ethersToNum(_LoanDisplay)*(ethersToNum(_LoanDisplay))*0.7).toFixed(2) }</Td>
-                    <Td>7%</Td>
+                    <Td isNumeric>$ {_PostedDisplay && (ethersToNum(_PostedDisplay)*LiquidationPercentCollat).toFixed(2)}</Td>
+                    <Td>{_Interest.toFixed(2)} %</Td>
                     </>
                   
                   }

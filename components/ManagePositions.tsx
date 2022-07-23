@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { Kovan, DAppProvider, useEtherBalance, useTokenBalance, useEthers, Config, useCall, CallResult, useContractFunction } from '@usedapp/core'
 import { utils, ethers, Signer, BigNumber } from 'ethers'
 
 import {
+    Select,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
@@ -41,10 +42,28 @@ import {
     StatNumber
   } from '@chakra-ui/react'
 
-export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer}
+export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer, forceRender}
     ) => {
 
+
+      let gen_ABI = ["function approve(address _spender, uint256 _value) public returns (bool success)", "function allowance(address owner, address spender)"]
+      let temp_contract = new ethers.Contract("0x2a622f65D4468d03Cb0b28Ff19BbE4C68C704f0a", gen_ABI, signer);
+
+
+      let { state, send } = useContractFunction(temp_contract, "approve", { transactionName: "approve", signer: signer })
+
+      useEffect(() => {
+        forceRender()
+      }, [state])
+
+      const handleapproveMousd = async () => {
+
+          console.log(signer)
+          send("0xD4e9503C91E2D426c8a95CF966DA3f8F31fBcb93", "1000000000000000000000000000000000000000")
+    }
+
         const [addcollatvalue, setaddcollatvalue] = useState(0)
+
   return (
     <div>
 
@@ -71,12 +90,16 @@ export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer}
                                     contract_signer={contract_signer}
                                     signer={signer} 
                                     addcollatvalue={addcollatvalue} 
-                                    setaddcollatvalue={setaddcollatvalue} />
+                                    setaddcollatvalue={setaddcollatvalue}
+                                    forceRender={forceRender}
+                                    />
 
                                     <AddLoan
                                     ADDR={ADDR}
                                     contract_signer={contract_signer} 
-                                    signer={signer}/>
+                                    signer={signer}
+                                    forceRender={forceRender}
+                                    />
                               </HStack>
                           </VStack>
 
@@ -86,13 +109,21 @@ export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer}
                                     <RemoveCollat 
                                     ADDR={ADDR}
                                     contract_signer={contract_signer} 
-                                    signer={signer}/>
+                                    signer={signer}
+                                    forceRender={forceRender}
+                                    />
 
                                     <RepayLoan 
                                     ADDR={ADDR}
                                     contract_signer={contract_signer} 
-                                    signer={signer}/>
+                                    signer={signer}
+                                    forceRender={forceRender}
+                                    />
+  {/* isLoading={isLoading || signer ? isLoading : false}  */}
+                                  <Button alignSelf="center" colorScheme="green" size="sm" onClick={handleapproveMousd}>Approve MoUSD</Button>
+
                               </HStack>
+                            
                           </VStack>
                   </VStack>
     
@@ -142,16 +173,19 @@ export default ManagePositions
 
 
 
-function AddCollat({ADDR, contract_signer, signer, addcollatvalue, setaddcollatvalue}) {
+function AddCollat({ADDR, contract_signer, signer, addcollatvalue, setaddcollatvalue, forceRender}) {
       
 
     // const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
 
     // const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
-    
 
     let { state, send } = useContractFunction(contract_signer, "increaseCollateralAmount", { transactionName: "increaseCollateralAmount", signer: signer })
+
+    useEffect(() => {
+      forceRender()
+    }, [state])
 
 
     const labelStyles = {
@@ -169,6 +203,7 @@ function AddCollat({ADDR, contract_signer, signer, addcollatvalue, setaddcollatv
   
       console.log("calling add loan", signer)
       console.log("values sending", ADDR, addcollatvalue)
+      console.log("babaaddloan", "addr", ADDR, "cs", contract_signer, "signer", signer, forceRender)
       send(ADDR, utils.parseUnits(addcollatvalue.toString()))
 
     }
@@ -203,7 +238,7 @@ function AddCollat({ADDR, contract_signer, signer, addcollatvalue, setaddcollatv
 }
 
 
-function AddLoan({contract_signer, signer, ADDR}) {
+function AddLoan({contract_signer, signer, ADDR, forceRender}) {
 const [addloanvalue, setaddloanvalue] = useState(0)
 
 const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
@@ -213,6 +248,10 @@ const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
 
 let { state, send } = useContractFunction(contract_signer, "openLoan", { transactionName: "openLoan", signer: signer })
+
+useEffect(() => {
+  forceRender()
+}, [state])
 
 
 const labelStyles = {
@@ -224,7 +263,7 @@ const labelStyles = {
 const handleAddLoanClick = () => {
 
   console.log("contract and signer", contract_signer, signer)
-  send(ADDR, utils.parseUnits("1"), utils.parseUnits(addloanvalue.toString()))
+  send(ADDR, utils.parseUnits("0.0000000001"), utils.parseUnits(addloanvalue.toString()))
 
   // utils.parseUnits(sliderValue.toString()), utils.parseUnits(loanslidervalue.toString())
   
@@ -256,7 +295,7 @@ return (
 )
 }
 
-function RemoveCollat({contract_signer, signer, ADDR}) {
+function RemoveCollat({contract_signer, signer, ADDR, forceRender}) {
 const [removecollatvalue, setremovecollatvalue] = useState(0)
 
 const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
@@ -267,6 +306,10 @@ const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
 let { state, send } = useContractFunction(contract_signer, "closeLoan", { transactionName: "closeLoan", signer: signer })
 
+useEffect(() => {
+  forceRender()
+}, [state])
+
 
 const labelStyles = {
   mt: '2',
@@ -276,8 +319,8 @@ const labelStyles = {
 
 const handleRemoveCollatClick = () => {
 
-  console.log(contract_signer)
-  send(ADDR, utils.parseUnits(removecollatvalue.toString()), utils.parseUnits("1"))
+  console.log("babaremovecollat", utils.parseUnits(removecollatvalue.toString()), utils.parseUnits("1"))
+  send(ADDR, utils.parseUnits(removecollatvalue.toString()), utils.parseUnits("0.0000001"))
 
 }
 
@@ -308,7 +351,7 @@ return (
 
 
 
-function RepayLoan({ADDR, contract_signer, signer}) {
+function RepayLoan({ADDR, contract_signer, signer, forceRender}) {
 const [repayloanvalue, setrepayloanvalue] = useState(0)
 
 const SUSD_ADDR = '0x4Da278314fE590698BFA6b53998d0367D4bd8eBb'
@@ -319,6 +362,10 @@ const contractAddress = '0x02bbd24F4C493946A5D875BCE0A2CE2F4a6fd087'
 
 let { state, send } = useContractFunction(contract_signer, "closeLoan", { transactionName: "closeLoan", signer: signer })
 
+useEffect(() => {
+  forceRender()
+}, [state])
+
 
 const labelStyles = {
   mt: '2',
@@ -328,8 +375,8 @@ const labelStyles = {
 
 const handleRepayLoanClick = () => {
 
-  console.log(contract_signer)
-  send(ADDR, utils.parseUnits("1"), utils.parseUnits(repayloanvalue.toString()))
+  console.log("babarepayloan", "addr", ADDR, "cs", contract_signer, "signer", signer, forceRender)
+  send(ADDR, utils.parseUnits("0.0000000001"), utils.parseUnits(repayloanvalue.toString()))
 
 }
 
