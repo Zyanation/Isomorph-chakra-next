@@ -68,6 +68,12 @@ export default function WithSubnavigation() {
     }
   }, [account])
 
+  useEffect(()=> {
+
+    activateBrowserWallet()
+
+  }, [])
+
   // useEffect(() => {
 
     

@@ -45,7 +45,7 @@ export const PersonalPositions = ({account, _LoanDisplay, _PostedDisplay, _Colla
                     <Td><StatNumber>$ {_LoanDisplay && ethersToNum(_LoanDisplay)}</StatNumber></Td>
                     <Td><Text><StatNumber>{_PostedDisplay && ethersToNum(_PostedDisplay)} {CollatName}</StatNumber></Text></Td>
                     <Td isNumeric>{_CollatPriceDisplay && ethersToNum(_CollatPriceDisplay)}</Td>
-                    <Td isNumeric>$ {_PostedDisplay && (ethersToNum(_PostedDisplay)*LiquidationPercentCollat).toFixed(2)}</Td>
+                    <Td isNumeric>$ {_PostedDisplay && (ethersToNum(_CollatPriceDisplay)*LiquidationPercentCollat).toFixed(2)}</Td>
                     <Td>{_Interest.toFixed(2)} %</Td>
                     </>
                   

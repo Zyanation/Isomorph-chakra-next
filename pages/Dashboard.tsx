@@ -10,6 +10,7 @@ import CollatList from "../components/CollatList.json"
 import { HandleLoadDashboardValues } from '../components/HandleLoadDashboardValues'
 import { PersonalPositions } from '../components/PersonalPositions'
 import { ManagePositions, EmptyManagePositions } from '../components/ManagePositions'
+import { PositionModule } from '../components/PositionModule'
 
 import mousd_abi from '../components/mousd_abi.json'
 
@@ -818,59 +819,56 @@ const [loanslidervalue, setloanslidervalue] = useState(50)
                 
                 }
 
-                  {/* ETH's part dashboard*/}
 
-                {PositionsState['seth'].collatposteddisplay != '0' && signer ? 
-                <>
+{/* ////////////////////////////////////////////// */}
 
-          <Box mt="3vh" rounded='lg' bgColor={UIcolor}>
-          <TableContainer rounded='lg' mt={5} w="120vh">
-            <Table variant='simple' colorScheme='facebook' size="md" pos="static">
-  
+{   PositionsState['susd'].collatposteddisplay != undefined ?
 
-                                  <PersonalPositions 
-                                  account={account}
-                                  _LoanDisplay={PositionsState['seth'].loandisplay }
-                                  _PostedDisplay={PositionsState['seth'].collatposteddisplay }
-                                  _CollatPriceDisplay={PositionsState['seth'].collatvaluedisplay}
-                                  ethersToNum={ethersToNum}
-                                  CollatName={PositionsState['seth'].fullname}
-                                  />
+    
+      Object.entries(CollatList).map(([key, value]) => {
+
+        if(key != 'susd') {
+
+          return (
+
+            <>
+
+            <PositionModule
+            key={PositionsState[key].name}
+            _LoanDisplay={PositionsState[key].loandisplay}
+            _PostedDisplay={PositionsState[key].collatposteddisplay }
+            _CollatPriceDisplay={PositionsState[key].collatvaluedisplay}
+            _Interest={PositionsState[key].interest}
+            _minOpeningMargin={PositionsState[key].minOpeningMargin}
+            CollatName={PositionsState[key].fullname}
+            ADDR={PositionsState[key].address}
+            signer={signer}
+            account={account}
+            ethersToNum={ethersToNum}
+            UIcolor={UIcolor}
+            contract_signer={contract_signer}
+            forceRender={forceRender}
+            />
 
 
-                  </Table>
-                  </TableContainer>
-                  </Box>
-               
-                </> 
-                : 
-                <> 
-
-                {/* //This should contain nothing */}
-                </>}
 
 
-                      {/* Manage loan position for ETH!! */}
-                      {PositionsState['seth'].collatposteddisplay != '0' && signer ? 
-                  
-                                          
+            </>
 
-                  <ManagePositions 
-                  ADDR={PositionsState['seth'].address}
-                  UIcolor={UIcolor}
-                  contract_signer={contract_signer}
-                  signer={signer}
-                  forceRender={forceRender}
-                  
-                  
-                  />
+          )
 
-                  :
 
-                  <>    
-                  </>
+          
+        }
+
+
+
+      })
+     : <></>
 
 }
+
+ 
 
 {LyraLPLoanDisplay != '0' && signer ? 
                 <>
@@ -969,9 +967,9 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
         
         setSliderValue(val)
 
-        if(val < loanslidervalue) {
-          setloanslidervalue(val)
-        }
+        // if(val < loanslidervalue) {
+        //   setloanslidervalue(val)
+        // }
         
         
         
@@ -983,15 +981,15 @@ function SlidebarCollateral({selectedCollatReadableBalance, sliderValue, setSlid
         </HStack>
       
       </NumberInput>
-      <Slider alignContent="flex-start" mt="50px" minW="380px" aria-label='slider-ex-6' 
+      <Slider focusThumbOnChange={false} alignContent="flex-start" mt="50px" minW="410px" aria-label='slider-ex-6' 
       max={selectedCollatReadableBalance ? selectedCollatReadableBalance : "1000"} 
       value={sliderValue ? sliderValue : 0} 
       onChange={(val) => {
         setSliderValue(val)
 
-        if(val < loanslidervalue) {
-          setloanslidervalue(val)
-        }
+        // if(val < loanslidervalue) {
+        //   setloanslidervalue(val)
+        // }
         
         }}>
  
@@ -1023,7 +1021,7 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
       <Heading mb="15px" size="sm">Loan amount: </Heading>
       <NumberInput width="10px" size="md" 
       defaultValue={15} 
-      max={sliderValue} 
+      max={10000000} //sliderValue 
       value={loanslidervalue ? loanslidervalue : 0} 
       onChange={(val) => setloanslidervalue(val)}>
         <HStack justifyContent='space-between' width="430px">
@@ -1031,7 +1029,7 @@ function SlidebarLoan({sliderValue, loanslidervalue, setloanslidervalue}) {
         </HStack>
       
       </NumberInput>
-      <Slider width="400px" aria-label='slider-ex-6' max={sliderValue} onChange={(val) => setloanslidervalue(val)}>
+      <Slider focusThumbOnChange={false} minW="410px" aria-label='slider-ex-6' max={10000000} onChange={(val) => setloanslidervalue(val)}>
  
   <SliderTrack>
     <SliderFilledTrack bg='purple.400'/>

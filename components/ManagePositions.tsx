@@ -80,7 +80,7 @@ export const ManagePositions = ({ADDR, UIcolor, contract_signer, signer, forceRe
       <AccordionIcon />
     </AccordionButton>
   </h2>
-  <AccordionPanel justifyContent="center" mb="10px" pb={4} fill="full" width="100vh">
+  <AccordionPanel justifyContent="center" mb="10px" pb={4} fill="full" width="120vh">
                   <VStack h="300px" bgColor={UIcolor} alignItems="flex-start">
 
                           <VStack>
@@ -224,7 +224,7 @@ function AddCollat({ADDR, contract_signer, signer, addcollatvalue, setaddcollatv
           </HStack>
         
         </NumberInput>
-        <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
+        <Slider focusThumbOnChange={false} alignContent="flex-start" mt="50px" minW="120px" aria-label='slider-ex-6' max={maxaddcollatvalue} value={addcollatvalue} onChange={(val) => setaddcollatvalue(val)}>
   
 
             <SliderTrack>
@@ -282,7 +282,7 @@ return (
       </HStack>
     
     </NumberInput>
-    <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
+    <Slider focusThumbOnChange={false} alignContent="flex-start" mt="50px" minW="120px" aria-label='slider-ex-6' max={maxaddloanvalue} value={addloanvalue} onChange={(val) => setaddloanvalue(val)}>
 
 
         <SliderTrack>
@@ -336,7 +336,7 @@ return (
       </HStack>
     
     </NumberInput>
-    <Slider alignContent="flex-start" mt="50px" minW="130px" aria-label='slider-ex-6' max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
+    <Slider focusThumbOnChange={false} alignContent="flex-start" mt="50px" minW="120px"  aria-label='slider-ex-6' max={maxremovecollatvalue} value={removecollatvalue} onChange={(val) => setremovecollatvalue(val)}>
 
 
         <SliderTrack>
@@ -392,7 +392,7 @@ return (
       </HStack>
     
     </NumberInput>
-    <Slider alignContent="flex-start" mt="50px" minW="130px" 
+    <Slider focusThumbOnChange={false} alignContent="flex-start" mt="50px" minW="120px"
     aria-label='slider-ex-6' 
     max={maxrepayloanvalue} 
     value={repayloanvalue} 

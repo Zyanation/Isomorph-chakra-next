@@ -93,9 +93,9 @@ export async function HandleLoadDashboardValues(account, contract_provider, cont
     // _setPostedDisplay(_collatval.mul(100000))
     // _setCollatPriceDisplay(_price.mul(100000))
 
-    PositionsState[key].loandisplay = _loanval.mul(1000)
-    PositionsState[key].collatposteddisplay = _collatval.mul(1000)
-    PositionsState[key].collatvaluedisplay = _price.mul(1000)
+    PositionsState[key].loandisplay = _loanval.mul(10000)
+    PositionsState[key].collatposteddisplay = _collatval.mul(10000)
+    PositionsState[key].collatvaluedisplay = _price.mul(10000)
 
     if(!interestPer3Min.isZero()) {
   
